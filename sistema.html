@@ -1,4 +1,12 @@
 <!DOCTYPE html>
+
+<script>
+  if (sessionStorage.getItem("acceso") !== "ok") {
+    window.location.href = "index.html";
+  }
+</script>
+
+
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -58,4 +66,5 @@
   <script src="script.js"></script>
 </body>
 </html>
+
 
