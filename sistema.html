@@ -25,11 +25,12 @@
     <h3>Ingrese los datos del sistema que desea calcular</h3>
 
     <label for="tipoSistema">Tipo de sistema:</label>
-    <select id="tipoSistema">
-      <option value="red">En red</option>
-      <option value="hibrido">Híbrido</option>
-      <option value="aislado">Aislado</option>
-    </select>
+<select id="tipoSistema" onchange="controlarRespaldo()">
+    <option value="red">En red</option>
+    <option value="hibrido">Híbrido</option>
+    <option value="aislado">Aislado</option>
+</select>
+
 
     <label for="consumoMensual">Consumo mensual (kWh):</label>
     <input type="number" id="consumoMensual" value="0" min="1">
@@ -66,6 +67,7 @@
   <script src="script.js"></script>
 </body>
 </html>
+
 
 
 
