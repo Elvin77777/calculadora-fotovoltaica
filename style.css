@@ -8,7 +8,7 @@
 body {
     margin: 0;
     min-height: 100vh;
-    background-image: url("fondo.jpg"); /* coloca la imagen en la misma carpeta */
+    background-image: url("img/fondo.jpg"); /* coloca la imagen en la misma carpeta */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -117,4 +117,5 @@ button.secundario:hover {
         padding: 20px;
     }
 }
+
 
