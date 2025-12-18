@@ -4,7 +4,7 @@ body {
   padding: 20px;
 
 
-  body::before {
+  
   content: "";
   position: fixed;
   top: 0;
@@ -13,7 +13,7 @@ body {
   height: 100%;
   background: rgba(0, 0, 0, 0.25);
   z-index: -1;
-}
+
 
   
   
@@ -88,5 +88,6 @@ button:hover {
   background: #e8f5e9;
   color: #1b5e20;
 }
+
 
 
