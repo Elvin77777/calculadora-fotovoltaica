@@ -7,25 +7,18 @@ function calcular() {
   const tipoSistema = document.getElementById("tipoSistema").value;
   const respaldo = parseFloat(document.getElementById("respaldo").value);
 
-  // Consumos
   const consumoDiario = consumoMensual / 30;
   const energiaSolarDiaria = consumoDiario * ahorro;
-
-  // Potencia FV
   const potenciaFV = energiaSolarDiaria / (hsp * (1 - perdidas));
 
-  // Selección automática de panel
   let potenciaPanel;
   if (potenciaFV <= 3) potenciaPanel = 450;
   else if (potenciaFV <= 6) potenciaPanel = 550;
   else potenciaPanel = 600;
 
   const numeroPaneles = Math.ceil((potenciaFV * 1000) / potenciaPanel);
-
-  // Inversor
   const inversor = Math.ceil(potenciaFV * 1.2);
 
-  // Baterías (simplificado por ahora)
   let bateriasTexto = "No aplica";
   if (tipoSistema !== "red") {
     const energiaRespaldo = energiaSolarDiaria * (respaldo / 24);
@@ -41,4 +34,30 @@ function calcular() {
     <strong>Inversor recomendado:</strong> ${inversor} kW<br>
     <strong>Baterías:</strong> ${bateriasTexto}
   `;
+
+  // ===== ALERTAS =====
+  let alertas = [];
+
+  if (perdidas < 0.15) {
+    alertas.push(`<div class="alerta amarilla">ℹ Las pérdidas seleccionadas son muy bajas para condiciones reales.</div>`);
+  }
+
+  if (potenciaFV < (energiaSolarDiaria / hsp)) {
+    alertas.push(`<div class="alerta roja">❌ La potencia fotovoltaica podría no cubrir el ahorro deseado.</div>`);
+  }
+
+  if (potenciaFV / inversor < 0.6) {
+    alertas.push(`<div class="alerta naranja">⚠ El inversor está sobredimensionado.</div>`);
+  }
+
+  if (tipoSistema === "red" && respaldo > 0) {
+    alertas.push(`<div class="alerta amarilla">ℹ En sistemas en red normalmente no se usan baterías.</div>`);
+  }
+
+  if (alertas.length === 0) {
+    alertas.push(`<div class="alerta verde">✔ El sistema se encuentra correctamente dimensionado.</div>`);
+  }
+
+  document.getElementById("alertas").innerHTML = alertas.join("");
 }
+
