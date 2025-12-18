@@ -4,18 +4,20 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // Habilita / deshabilita horas de respaldo según el sistema
-function actualizarRespaldo() {
-  const tipoSistema = document.getElementById("tipoSistema").value;
-  const respaldo = document.getElementById("respaldo");
+const respaldoInput = document.getElementById("respaldo");
 
-  if (tipoSistema === "red") {
-    respaldo.value = 0;
-    respaldo.disabled = true;
-  } else {
-    respaldo.disabled = false;
-    if (respaldo.value == 0) respaldo.value = 7;
-  }
+function controlarRespaldo() {
+    const tipoSistema = document.getElementById("tipoSistema").value;
+
+    if (tipoSistema === "hibrido" || tipoSistema === "aislado") {
+        respaldoInput.disabled = false;
+        respaldoInput.value = ""; // SIN valor por defecto
+    } else {
+        respaldoInput.disabled = true;
+        respaldoInput.value = "";
+    }
 }
+
 
 // Evento al cambiar tipo de sistema
 document.getElementById("tipoSistema").addEventListener("change", actualizarRespaldo);
@@ -110,6 +112,7 @@ function limpiarFormulario() {
   // Reaplicar lógica del sistema
   actualizarRespaldo();
 }
+
 
 
 
