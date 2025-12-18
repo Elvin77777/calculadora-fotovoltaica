@@ -6,66 +6,54 @@
   }
 </script>
 
-
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Calculadora Fotovoltaica</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>Calculadora de Sistema Fotovoltaico</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-  <div class="container">
-
+<div class="contenedor">
     <h1>Calculadora de Sistema Fotovoltaico</h1>
-   
 
     <h3>Ingrese los datos del sistema que desea calcular</h3>
 
     <label for="tipoSistema">Tipo de sistema:</label>
-<select id="tipoSistema" onchange="controlarRespaldo()">
-    <option value="red">En red</option>
-    <option value="hibrido">Híbrido</option>
-    <option value="aislado">Aislado</option>
-</select>
+    <select id="tipoSistema" onchange="controlarRespaldo()">
+        <option value="red">En red</option>
+        <option value="hibrido">Híbrido</option>
+        <option value="aislado">Aislado</option>
+    </select>
 
-
-    <label for="consumoMensual">Consumo mensual (kWh):</label>
-    <input type="number" id="consumoMensual" value="0" min="1">
+    <label for="consumo">Consumo mensual (kWh):</label>
+    <input type="number" id="consumo" min="0">
 
     <label for="ahorro">Ahorro deseado (%):</label>
-    <input type="number" id="ahorro" value="0" min="1" max="100">
+    <input type="number" id="ahorro" value="90">
 
-    <label for="hsp">Horas solares pico (h/día):</label>
-    <input type="number" id="hsp" value="0" step="0.1" min="1">
+    <label for="horasSol">Horas solares pico (h/día):</label>
+    <input type="number" id="horasSol" step="0.1" value="5.5">
 
     <label for="perdidas">Pérdidas del sistema (%):</label>
-    <input type="number" id="perdidas" value="0" min="0" max="50">
+    <input type="number" id="perdidas" value="20">
 
     <label for="respaldo">Horas de respaldo (solo híbrido / aislado):</label>
-<input type="number" id="respaldo" min="0" disabled>
+    <input type="number" id="respaldo" min="0" disabled>
 
+    <button onclick="calcularSistema()">Calcular sistema</button>
+    <button class="secundario" onclick="nuevaCotizacion()">Nueva cotización</button>
 
-    <button onclick="calcular()">Calcular sistema</button>
-    <button type="button" onclick="limpiarFormulario()" class="btn-secundario">
-  Nueva cotización
-</button>
-
-    <h2>Resultados</h2>
-    <div id="resultados" class="resultados">
-      <p>Introduce los datos y presiona “Calcular sistema”.</p>
+    <div id="resultados">
+        <p>Introduce los datos y presiona “Calcular sistema”.</p>
     </div>
+</div>
 
-    <h2>Alertas técnicas</h2>
-    <div id="alertas"></div>
-
-  </div>
-
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
+
 
 
 
