@@ -26,23 +26,7 @@ function calcular() {
     bateriasTexto = `Energía de respaldo requerida: ${energiaRespaldo.toFixed(1)} kWh`;
   }
 
-  const tipoSistemaSelect = document.getElementById("tipoSistema");
-const respaldoInput = document.getElementById("respaldo");
-
-function actualizarRespaldo() {
-  const tipo = tipoSistemaSelect.value;
-
-  if (tipo === "red") {
-    respaldoInput.disabled = true;
-    respaldoInput.value = 0;
-  } else {
-    respaldoInput.disabled = false;
-    if (respaldoInput.value == 0) respaldoInput.value = 7;
-  }
-}
-
-tipoSistemaSelect.addEventListener("change", actualizarRespaldo);
-actualizarRespaldo();
+  
 
 
   document.getElementById("resultados").innerHTML = `
@@ -80,6 +64,30 @@ actualizarRespaldo();
 
   document.getElementById("alertas").innerHTML = alertas.join("");
 }
+
+
+document.addEventListener("DOMContentLoaded", function () {
+
+  const tipoSistemaSelect = document.getElementById("tipoSistema");
+  const respaldoInput = document.getElementById("respaldo");
+
+  function actualizarRespaldo() {
+    if (tipoSistemaSelect.value === "red") {
+      respaldoInput.disabled = true;
+      respaldoInput.value = 0;
+    } else {
+      respaldoInput.disabled = false;
+      if (respaldoInput.value == 0) respaldoInput.value = 7;
+    }
+  }
+
+  tipoSistemaSelect.addEventListener("change", actualizarRespaldo);
+
+  // Ejecutar al cargar la página
+  actualizarRespaldo();
+
+});
+
 
 
 
