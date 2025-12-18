@@ -1,3 +1,5 @@
+console.log("SCRIPT CARGADO CORRECTAMENTE");
+
 // Ejecutar al cargar la página
 document.addEventListener("DOMContentLoaded", function () {
     controlarRespaldo();
@@ -117,3 +119,4 @@ function nuevaCotizacion() {
     document.getElementById("resultados").innerHTML =
         "<p>Introduce los datos y presiona “Calcular sistema”.</p>";
 }
+
