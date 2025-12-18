@@ -1,7 +1,8 @@
 // Ejecutar al cargar la página
 document.addEventListener("DOMContentLoaded", function () {
-  actualizarRespaldo();
+    controlarRespaldo();
 });
+
 
 // Habilita / deshabilita horas de respaldo según el sistema
 const respaldoInput = document.getElementById("respaldo");
@@ -114,6 +115,7 @@ function limpiarFormulario() {
   // Reaplicar lógica del sistema
   actualizarRespaldo();
 }
+
 
 
 
