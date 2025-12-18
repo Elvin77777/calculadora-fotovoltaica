@@ -74,9 +74,9 @@ function calcularSistema() {
 // Limpia todos los datos
 function nuevaCotizacion() {
     document.getElementById("consumo").value = "";
-    document.getElementById("ahorro").value = "90";
-    document.getElementById("horasSol").value = "5.5";
-    document.getElementById("perdidas").value = "20";
+    document.getElementById("ahorro").value = "";
+    document.getElementById("horasSol").value = "";
+    document.getElementById("perdidas").value = "";
     document.getElementById("respaldo").value = "";
     document.getElementById("tipoSistema").value = "red";
 
@@ -85,6 +85,7 @@ function nuevaCotizacion() {
     document.getElementById("resultados").innerHTML =
         "<p>Introduce los datos y presiona “Calcular sistema”.</p>";
 }
+
 
 
 
