@@ -5,7 +5,8 @@ function calcular() {
   const hsp = parseFloat(document.getElementById("hsp").value);
   const perdidas = parseFloat(document.getElementById("perdidas").value) / 100;
   const tipoSistema = document.getElementById("tipoSistema").value;
-  const respaldo = parseFloat(document.getElementById("respaldo").value);
+  const respaldo = tipoSistema === "red" ? 0 : parseFloat(document.getElementById("respaldo").value);
+
 
   const consumoDiario = consumoMensual / 30;
   const energiaSolarDiaria = consumoDiario * ahorro;
@@ -79,5 +80,6 @@ actualizarRespaldo();
 
   document.getElementById("alertas").innerHTML = alertas.join("");
 }
+
 
 
