@@ -8,15 +8,17 @@ const respaldoInput = document.getElementById("respaldo");
 
 function controlarRespaldo() {
     const tipoSistema = document.getElementById("tipoSistema").value;
+    const respaldoInput = document.getElementById("respaldo");
 
     if (tipoSistema === "hibrido" || tipoSistema === "aislado") {
         respaldoInput.disabled = false;
-        respaldoInput.value = ""; // SIN valor por defecto
+        respaldoInput.value = "";
     } else {
         respaldoInput.disabled = true;
         respaldoInput.value = "";
     }
 }
+
 
 
 // Evento al cambiar tipo de sistema
@@ -112,6 +114,7 @@ function limpiarFormulario() {
   // Reaplicar lógica del sistema
   actualizarRespaldo();
 }
+
 
 
 
