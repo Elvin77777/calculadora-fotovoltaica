@@ -3,22 +3,9 @@ document.addEventListener("DOMContentLoaded", function () {
     controlarRespaldo();
 });
 
-function calcularSistema() {
-
-    if (!validarFormulario()) {
-        return;
-    }
-
-
-
-
-    // 👇 aquí sigue tu cálculo normal
-
-
-// Habilita / deshabilita horas de respaldo según el sistema
-const respaldoInput = document.getElementById("respaldo");
-
-// Controla el campo de horas de respaldo
+// ===============================
+// Habilita / deshabilita respaldo
+// ===============================
 function controlarRespaldo() {
     const tipoSistema = document.getElementById("tipoSistema").value;
     const respaldo = document.getElementById("respaldo");
@@ -32,32 +19,10 @@ function controlarRespaldo() {
     }
 }
 
-// Ejecutar al cargar la página
-document.addEventListener("DOMContentLoaded", function () {
-    controlarRespaldo();
-});
-
-// Cálculo del sistema
-function calcularSistema() {
-    const tipoSistema = document.getElementById("tipoSistema").value;
-    const consumo = parseFloat(document.getElementById("consumo").value);
-    const ahorro = parseFloat(document.getElementById("ahorro").value);
-    const horasSol = parseFloat(document.getElementById("horasSol").value);
-    const perdidas = parseFloat(document.getElementById("perdidas").value);
-    const respaldo = document.getElementById("respaldo").value;
-
-    if (!consumo || consumo <= 0) {
-        alert("Ingrese un consumo mensual válido.");
-        return;
-    }
-
-    if ((tipoSistema === "hibrido" || tipoSistema === "aislado") && respaldo === "") {
-        alert("Ingrese las horas de respaldo para sistemas híbridos o aislados.");
-        return;
-    }
-
-
-        function validarFormulario() {
+// ===============================
+// Validaciones
+// ===============================
+function validarFormulario() {
     const tipoSistema = document.getElementById("tipoSistema").value;
     const consumo = parseFloat(document.getElementById("consumo").value);
     const ahorro = parseFloat(document.getElementById("ahorro").value);
@@ -92,7 +57,22 @@ function calcularSistema() {
 
     return true;
 }
-    
+
+// ===============================
+// Cálculo del sistema
+// ===============================
+function calcularSistema() {
+
+    if (!validarFormulario()) {
+        return;
+    }
+
+    const tipoSistema = document.getElementById("tipoSistema").value;
+    const consumo = parseFloat(document.getElementById("consumo").value);
+    const ahorro = parseFloat(document.getElementById("ahorro").value);
+    const horasSol = parseFloat(document.getElementById("horasSol").value);
+    const perdidas = parseFloat(document.getElementById("perdidas").value);
+    const respaldo = document.getElementById("respaldo").value;
 
     const consumoCubierto = consumo * (ahorro / 100);
     const consumoDiario = consumoCubierto / 30;
@@ -120,39 +100,20 @@ function calcularSistema() {
     document.getElementById("resultados").innerHTML = resultado;
 }
 
-// Limpia todos los datos
+// ===============================
+// Nueva cotización
+// ===============================
 function nuevaCotizacion() {
-    // Limpiar campos de entrada
     document.getElementById("consumo").value = "";
     document.getElementById("ahorro").value = "";
     document.getElementById("horasSol").value = "";
     document.getElementById("perdidas").value = "";
     document.getElementById("respaldo").value = "";
 
-    // Reiniciar tipo de sistema
     document.getElementById("tipoSistema").value = "red";
 
-    // Aplicar correctamente la lógica de habilitar/deshabilitar
     controlarRespaldo();
 
-    // Limpiar resultados
     document.getElementById("resultados").innerHTML =
         "<p>Introduce los datos y presiona “Calcular sistema”.</p>";
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
