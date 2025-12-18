@@ -130,3 +130,25 @@ function mostrarAlerta(mensaje, tipo) {
 
   alertasDiv.innerHTML = `<div class="${clase}">${mensaje}</div>`;
 }
+
+
+function limpiarFormulario() {
+
+  // Restablecer campos de entrada
+  document.getElementById("tipoSistema").value = "red";
+  document.getElementById("consumoMensual").value = "";
+  document.getElementById("ahorro").value = 90;
+  document.getElementById("hsp").value = 5.5;
+  document.getElementById("perdidas").value = 20;
+  document.getElementById("respaldo").value = 0;
+
+  // Limpiar resultados y alertas
+  document.getElementById("resultados").innerHTML =
+    "<p>Introduce los datos y presiona “Calcular sistema”.</p>";
+
+  document.getElementById("alertas").innerHTML = "";
+
+  // Asegurar estado correcto del campo respaldo
+  actualizarRespaldo();
+}
+
