@@ -91,10 +91,10 @@ function calcular() {
 // Botón Nueva cotización
 function limpiarFormulario() {
 
-  // Tipo de sistema por defecto
+  // Reset tipo de sistema
   document.getElementById("tipoSistema").value = "red";
 
-  // Limpiar campos de entrada visibles
+  // Limpiar TODOS los campos
   document.getElementById("consumoMensual").value = "";
   document.getElementById("ahorro").value = "";
   document.getElementById("hsp").value = "";
@@ -107,8 +107,10 @@ function limpiarFormulario() {
 
   document.getElementById("alertas").innerHTML = "";
 
-  // Aplicar lógica de sistema (deshabilita respaldo)
+  // Reaplicar lógica del sistema
   actualizarRespaldo();
 }
+
+
 
 
