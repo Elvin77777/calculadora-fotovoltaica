@@ -84,9 +84,10 @@ document.addEventListener("DOMContentLoaded", function () {
   tipoSistemaSelect.addEventListener("change", actualizarRespaldo);
 
   // Ejecutar al cargar la página
- // actualizarRespaldo();
+  actualizarRespaldo();
 
 });
+
 
 
 
