@@ -1,140 +1,96 @@
-// ===============================
-// CONTROL DE HORAS DE RESPALDO
-// ===============================
-
-function actualizarRespaldo() {
-  const tipoSistemaSelect = document.getElementById("tipoSistema");
-  const respaldoInput = document.getElementById("respaldo");
-
-  if (!tipoSistemaSelect || !respaldoInput) return;
-
-  if (tipoSistemaSelect.value === "red") {
-    respaldoInput.disabled = true;
-    respaldoInput.value = 0;
-  } else {
-    respaldoInput.disabled = false;
-    if (respaldoInput.value == 0) respaldoInput.value = 7;
-  }
-}
-
 // Ejecutar al cargar la página
 document.addEventListener("DOMContentLoaded", function () {
   actualizarRespaldo();
-  document
-    .getElementById("tipoSistema")
-    .addEventListener("change", actualizarRespaldo);
 });
 
-// ===============================
-// CÁLCULO DEL SISTEMA
-// ===============================
+// Habilita / deshabilita horas de respaldo según el sistema
+function actualizarRespaldo() {
+  const tipoSistema = document.getElementById("tipoSistema").value;
+  const respaldo = document.getElementById("respaldo");
 
+  if (tipoSistema === "red") {
+    respaldo.value = 0;
+    respaldo.disabled = true;
+  } else {
+    respaldo.disabled = false;
+    if (respaldo.value == 0) respaldo.value = 7;
+  }
+}
+
+// Evento al cambiar tipo de sistema
+document.getElementById("tipoSistema").addEventListener("change", actualizarRespaldo);
+
+// Cálculo principal
 function calcular() {
-
-  // Asegurar estado correcto antes de calcular
-  actualizarRespaldo();
 
   const tipoSistema = document.getElementById("tipoSistema").value;
   const consumoMensual = parseFloat(document.getElementById("consumoMensual").value);
-  const ahorro = parseFloat(document.getElementById("ahorro").value) / 100;
+  const ahorro = parseFloat(document.getElementById("ahorro").value);
   const hsp = parseFloat(document.getElementById("hsp").value);
-  const perdidas = parseFloat(document.getElementById("perdidas").value) / 100;
-
-  const respaldo = tipoSistema === "red"
+  const perdidas = parseFloat(document.getElementById("perdidas").value);
+  const respaldoHoras = tipoSistema === "red"
     ? 0
     : parseFloat(document.getElementById("respaldo").value);
 
-  // Validaciones básicas
-  if (isNaN(consumoMensual) || consumoMensual <= 0) {
-    mostrarAlerta("El consumo mensual debe ser mayor a cero.", "error");
-    return;
-  }
-
-  if (isNaN(hsp) || hsp <= 0) {
-    mostrarAlerta("Las horas solares pico no son válidas.", "error");
-    return;
-  }
-
-  // ===============================
-  // CÁLCULOS
-  // ===============================
-
-  const consumoDiario = consumoMensual / 30;
-  const energiaSolarDiaria = consumoDiario * ahorro;
-  const potenciaFV = energiaSolarDiaria / (hsp * (1 - perdidas));
-
-  // Selección automática del panel
-  let potenciaPanel;
-  if (potenciaFV <= 3) potenciaPanel = 450;
-  else if (potenciaFV <= 6) potenciaPanel = 550;
-  else potenciaPanel = 600;
-
-  const numeroPaneles = Math.ceil((potenciaFV * 1000) / potenciaPanel);
-  const potenciaInversor = Math.ceil(potenciaFV * 1.2);
-
-  // Baterías (simplificado)
-  let textoBaterias = "No aplica para sistema en red";
-  if (tipoSistema !== "red") {
-    const energiaRespaldo = energiaSolarDiaria * (respaldo / 24);
-    textoBaterias = `Energía de respaldo requerida: ${energiaRespaldo.toFixed(2)} kWh`;
-  }
-
-  // ===============================
-  // MOSTRAR RESULTADOS
-  // ===============================
-
-  document.getElementById("resultados").innerHTML = `
-    <p><strong>Consumo diario:</strong> ${consumoDiario.toFixed(2)} kWh/día</p>
-    <p><strong>Energía solar requerida:</strong> ${energiaSolarDiaria.toFixed(2)} kWh/día</p>
-    <p><strong>Potencia del sistema:</strong> ${potenciaFV.toFixed(2)} kWp</p>
-    <p><strong>Panel recomendado:</strong> ${potenciaPanel} W</p>
-    <p><strong>Cantidad de paneles:</strong> ${numeroPaneles}</p>
-    <p><strong>Inversor recomendado:</strong> ${potenciaInversor} kW</p>
-    <p><strong>Baterías:</strong> ${textoBaterias}</p>
-  `;
-
-  // ===============================
-  // ALERTAS TÉCNICAS
-  // ===============================
-
-  let alertas = [];
-
-  if (perdidas < 0.15) {
-    alertas.push("Las pérdidas ingresadas son muy bajas para condiciones reales.");
-  }
-
-  if (potenciaFV / potenciaInversor < 0.6) {
-    alertas.push("El inversor está sobredimensionado respecto al campo FV.");
-  }
-
-  if (tipoSistema === "red" && respaldo > 0) {
-    alertas.push("En sistemas en red no se recomienda el uso de baterías.");
-  }
-
-  if (alertas.length === 0) {
-    mostrarAlerta("El sistema está correctamente dimensionado.", "ok");
-  } else {
-    mostrarAlerta(alertas.join("<br>"), "warning");
-  }
-}
-
-// ===============================
-// FUNCIÓN DE ALERTAS
-// ===============================
-
-function mostrarAlerta(mensaje, tipo) {
+  const alertas = [];
+  const resultados = document.getElementById("resultados");
   const alertasDiv = document.getElementById("alertas");
 
-  let clase = "alerta";
-  if (tipo === "error") clase += " error";
+  if (!consumoMensual || consumoMensual <= 0) {
+    alert("Ingresa un consumo mensual válido.");
+    return;
+  }
 
-  alertasDiv.innerHTML = `<div class="${clase}">${mensaje}</div>`;
+  const consumoDiario = consumoMensual / 30;
+  const consumoObjetivo = consumoDiario * (ahorro / 100);
+  const factorPerdidas = 1 - (perdidas / 100);
+
+  const potenciaNecesaria = consumoObjetivo / (hsp * factorPerdidas);
+
+  const potenciaPanel = 550; // recomendación automática
+  const numeroPaneles = Math.ceil((potenciaNecesaria * 1000) / potenciaPanel);
+
+  let bateriasTexto = "No aplica (sistema en red)";
+
+  if (tipoSistema !== "red") {
+    const energiaRespaldo = (consumoDiario / 24) * respaldoHoras;
+
+    bateriasTexto = `
+      Energía de respaldo: ${energiaRespaldo.toFixed(2)} kWh<br>
+      Tipo sugerido: Litio (48V)
+    `;
+  }
+
+  resultados.innerHTML = `
+    <strong>Resultados del sistema:</strong><br><br>
+
+    Consumo diario: ${consumoDiario.toFixed(2)} kWh<br>
+    Consumo cubierto: ${consumoObjetivo.toFixed(2)} kWh/día<br>
+    Potencia FV requerida: ${potenciaNecesaria.toFixed(2)} kWp<br><br>
+
+    Panel recomendado: ${potenciaPanel} W<br>
+    Cantidad de paneles: ${numeroPaneles}<br><br>
+
+    Tipo de sistema: ${tipoSistema}<br>
+    ${bateriasTexto}
+  `;
+
+  if (perdidas > 25) {
+    alertas.push("Las pérdidas del sistema son altas.");
+  }
+
+  if (hsp < 4) {
+    alertas.push("Horas solares bajas para un buen rendimiento.");
+  }
+
+  alertasDiv.innerHTML = alertas.length
+    ? "<ul><li>" + alertas.join("</li><li>") + "</li></ul>"
+    : "<p>Sin alertas técnicas.</p>";
 }
 
-
+// Botón Nueva cotización
 function limpiarFormulario() {
 
-  // Restablecer campos de entrada
   document.getElementById("tipoSistema").value = "red";
   document.getElementById("consumoMensual").value = "";
   document.getElementById("ahorro").value = 90;
@@ -142,13 +98,10 @@ function limpiarFormulario() {
   document.getElementById("perdidas").value = 20;
   document.getElementById("respaldo").value = 0;
 
-  // Limpiar resultados y alertas
   document.getElementById("resultados").innerHTML =
     "<p>Introduce los datos y presiona “Calcular sistema”.</p>";
 
   document.getElementById("alertas").innerHTML = "";
 
-  // Asegurar estado correcto del campo respaldo
   actualizarRespaldo();
 }
-
