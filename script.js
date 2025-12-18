@@ -1,5 +1,5 @@
 // Ejecutar al cargar la página
-document.addEventListener("DOMContentLoaded", function () {
+//document.addEventListener("DOMContentLoaded", function () {
     controlarRespaldo();
 });
 
@@ -115,6 +115,7 @@ function limpiarFormulario() {
   // Reaplicar lógica del sistema
   actualizarRespaldo();
 }
+
 
 
 
