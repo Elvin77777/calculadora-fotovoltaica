@@ -9,41 +9,7 @@ function calcularSistema() {
         return;
     }
 
-    function validarFormulario() {
-    const tipoSistema = document.getElementById("tipoSistema").value;
-    const consumo = parseFloat(document.getElementById("consumo").value);
-    const ahorro = parseFloat(document.getElementById("ahorro").value);
-    const horasSol = parseFloat(document.getElementById("horasSol").value);
-    const perdidas = parseFloat(document.getElementById("perdidas").value);
-    const respaldo = document.getElementById("respaldo").value;
 
-    if (isNaN(consumo) || consumo <= 0) {
-        alert("Ingresa un consumo mensual válido en kWh.");
-        return false;
-    }
-
-    if (isNaN(ahorro) || ahorro <= 0 || ahorro > 100) {
-        alert("El porcentaje de ahorro debe estar entre 1 y 100 %.");
-        return false;
-    }
-
-    if (isNaN(horasSol) || horasSol <= 0) {
-        alert("Ingresa un valor válido de horas solares promedio.");
-        return false;
-    }
-
-    if (isNaN(perdidas) || perdidas < 0 || perdidas > 50) {
-        alert("Las pérdidas deben estar entre 0 y 50 %.");
-        return false;
-    }
-
-    if ((tipoSistema === "hibrido" || tipoSistema === "aislado") && respaldo === "") {
-        alert("Debes indicar las horas de respaldo para sistemas con baterías.");
-        return false;
-    }
-
-    return true;
-}
 
 
     // 👇 aquí sigue tu cálculo normal
@@ -90,6 +56,44 @@ function calcularSistema() {
         return;
     }
 
+
+        function validarFormulario() {
+    const tipoSistema = document.getElementById("tipoSistema").value;
+    const consumo = parseFloat(document.getElementById("consumo").value);
+    const ahorro = parseFloat(document.getElementById("ahorro").value);
+    const horasSol = parseFloat(document.getElementById("horasSol").value);
+    const perdidas = parseFloat(document.getElementById("perdidas").value);
+    const respaldo = document.getElementById("respaldo").value;
+
+    if (isNaN(consumo) || consumo <= 0) {
+        alert("Ingresa un consumo mensual válido en kWh.");
+        return false;
+    }
+
+    if (isNaN(ahorro) || ahorro <= 0 || ahorro > 100) {
+        alert("El porcentaje de ahorro debe estar entre 1 y 100 %.");
+        return false;
+    }
+
+    if (isNaN(horasSol) || horasSol <= 0) {
+        alert("Ingresa un valor válido de horas solares promedio.");
+        return false;
+    }
+
+    if (isNaN(perdidas) || perdidas < 0 || perdidas > 50) {
+        alert("Las pérdidas deben estar entre 0 y 50 %.");
+        return false;
+    }
+
+    if ((tipoSistema === "hibrido" || tipoSistema === "aislado") && respaldo === "") {
+        alert("Debes indicar las horas de respaldo para sistemas con baterías.");
+        return false;
+    }
+
+    return true;
+}
+    
+
     const consumoCubierto = consumo * (ahorro / 100);
     const consumoDiario = consumoCubierto / 30;
 
@@ -135,6 +139,7 @@ function nuevaCotizacion() {
     document.getElementById("resultados").innerHTML =
         "<p>Introduce los datos y presiona “Calcular sistema”.</p>";
 }
+
 
 
 
