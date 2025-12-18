@@ -1,5 +1,5 @@
 // Ejecutar al cargar la página
-//document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
     controlarRespaldo();
 });
 
@@ -23,7 +23,7 @@ function controlarRespaldo() {
 
 
 // Evento al cambiar tipo de sistema
-document.getElementById("tipoSistema").addEventListener("change", actualizarRespaldo);
+//document.getElementById("tipoSistema").addEventListener("change", actualizarRespaldo);
 
 // Cálculo principal
 function calcular() {
@@ -115,6 +115,7 @@ function limpiarFormulario() {
   // Reaplicar lógica del sistema
   actualizarRespaldo();
 }
+
 
 
 
