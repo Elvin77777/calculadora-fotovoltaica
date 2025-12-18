@@ -1,10 +1,24 @@
+/* ===============================
+   ESTILO GENERAL DEL SITIO
+================================ */
+
+* {
+  box-sizing: border-box;
+}
+
 body {
-  font-family: Arial, sans-serif;
-  background: #f4f6f8;
-  padding: 20px;
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
 
+  background-image: url("img/fondo.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
 
-  
+/* Capa oscura suave para mejorar legibilidad */
+body::before {
   content: "";
   position: fixed;
   top: 0;
@@ -13,41 +27,84 @@ body {
   height: 100%;
   background: rgba(0, 0, 0, 0.25);
   z-index: -1;
+}
 
+/* ===============================
+   CONTENEDOR PRINCIPAL
+================================ */
 
-  
-  
+.container {
+  max-width: 850px;
+  margin: 40px auto;
+  padding: 30px;
+
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 10px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+}
+
+/* ===============================
+   TÍTULOS
+================================ */
+
+h1,
+h2 {
+  text-align: center;
+  color: #222;
 }
 
 h1 {
-  text-align: center;
+  margin-bottom: 20px;
 }
 
-.container {
-  max-width: 600px;
-  background: white;
-  padding: 20px;
-  margin: auto;
-  border-radius: 8px;
+h2 {
+  margin-top: 40px;
 }
+
+/* ===============================
+   FORMULARIO
+================================ */
 
 label {
   display: block;
-  margin-top: 10px;
+  margin-top: 15px;
+  font-weight: bold;
+  color: #333;
 }
 
-input, select {
+input,
+select {
   width: 100%;
-  padding: 6px;
+  padding: 10px;
+  margin-top: 5px;
+
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
+
+/* Campo deshabilitado */
+input:disabled {
+  background: #f0f0f0;
+  color: #888;
+}
+
+/* ===============================
+   BOTÓN
+================================ */
 
 button {
-  margin-top: 15px;
-  padding: 10px;
   width: 100%;
+  margin-top: 25px;
+  padding: 12px;
+
   background: #1e88e5;
   color: white;
+  font-size: 16px;
+  font-weight: bold;
+
   border: none;
+  border-radius: 6px;
   cursor: pointer;
 }
 
@@ -55,39 +112,51 @@ button:hover {
   background: #1565c0;
 }
 
-#resultados {
-  margin-top: 20px;
-  background: #eef3f7;
-  padding: 15px;
-  border-radius: 5px;
+/* ===============================
+   RESULTADOS
+================================ */
+
+.resultados {
+  margin-top: 30px;
+  padding: 20px;
+
+  background: #f8f9fa;
+  border-left: 5px solid #1e88e5;
+  border-radius: 6px;
 }
+
+.resultados p {
+  margin: 10px 0;
+  font-size: 15px;
+}
+
+/* ===============================
+   ALERTAS
+================================ */
 
 .alerta {
-  padding: 10px;
-  margin-bottom: 8px;
-  border-radius: 4px;
-  font-size: 14px;
+  margin-top: 20px;
+  padding: 15px;
+
+  background: #fff3cd;
+  color: #856404;
+  border-left: 5px solid #ffc107;
+  border-radius: 6px;
 }
 
-.roja {
-  background: #fdecea;
-  color: #b71c1c;
+.alerta.error {
+  background: #f8d7da;
+  color: #721c24;
+  border-left-color: #dc3545;
 }
 
-.naranja {
-  background: #fff4e5;
-  color: #e65100;
+/* ===============================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 600px) {
+  .container {
+    margin: 20px;
+    padding: 20px;
+  }
 }
-
-.amarilla {
-  background: #fffde7;
-  color: #827717;
-}
-
-.verde {
-  background: #e8f5e9;
-  color: #1b5e20;
-}
-
-
-
