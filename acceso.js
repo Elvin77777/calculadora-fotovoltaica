@@ -11,4 +11,12 @@ function verificarClave() {
   } else {
     mensaje.innerHTML = "<p style='color:red;'>Clave incorrecta</p>";
   }
+
+if (claveIngresada === CLAVE_CORRECTA) {
+  sessionStorage.setItem("acceso", "ok");
+  window.location.href = "sistema.html";
 }
+
+  
+}
+
