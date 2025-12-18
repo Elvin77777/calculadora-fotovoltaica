@@ -73,18 +73,24 @@ function calcularSistema() {
 
 // Limpia todos los datos
 function nuevaCotizacion() {
+    // Limpiar campos de entrada
     document.getElementById("consumo").value = "";
     document.getElementById("ahorro").value = "";
     document.getElementById("horasSol").value = "";
     document.getElementById("perdidas").value = "";
     document.getElementById("respaldo").value = "";
+
+    // Reiniciar tipo de sistema
     document.getElementById("tipoSistema").value = "red";
 
+    // Aplicar correctamente la lógica de habilitar/deshabilitar
     controlarRespaldo();
 
+    // Limpiar resultados
     document.getElementById("resultados").innerHTML =
         "<p>Introduce los datos y presiona “Calcular sistema”.</p>";
 }
+
 
 
 
