@@ -44,10 +44,9 @@
     <label for="perdidas">Pérdidas del sistema (%):</label>
     <input type="number" id="perdidas" value="0" min="0" max="50">
 
-    <label for="respaldo">
-      Horas de respaldo (solo híbrido / aislado):
-    </label>
-    <input type="number" id="respaldo" min="1">
+    <label for="respaldo">Horas de respaldo (solo híbrido / aislado):</label>
+<input type="number" id="respaldo" min="0" disabled>
+
 
     <button onclick="calcular()">Calcular sistema</button>
     <button type="button" onclick="limpiarFormulario()" class="btn-secundario">
@@ -67,6 +66,7 @@
   <script src="script.js"></script>
 </body>
 </html>
+
 
 
 
