@@ -4,7 +4,7 @@ function verificarClave() {
   const mensaje = document.getElementById("mensaje");
 
   // 🔐 CLAVE (puedes cambiarla)
-  const CLAVE_CORRECTA = "2025";
+  const CLAVE_CORRECTA = "MIDANIELA";
 
   if (claveIngresada === CLAVE_CORRECTA) {
     window.location.href = "sistema.html";
@@ -19,5 +19,6 @@ if (claveIngresada === CLAVE_CORRECTA) {
 
   
 }
+
 
 
