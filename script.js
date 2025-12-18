@@ -91,17 +91,24 @@ function calcular() {
 // Botón Nueva cotización
 function limpiarFormulario() {
 
+  // Tipo de sistema por defecto
   document.getElementById("tipoSistema").value = "red";
-  document.getElementById("consumoMensual").value = "";
-  document.getElementById("ahorro").value = 90;
-  document.getElementById("hsp").value = 5.5;
-  document.getElementById("perdidas").value = 20;
-  document.getElementById("respaldo").value = 0;
 
+  // Limpiar campos de entrada visibles
+  document.getElementById("consumoMensual").value = "";
+  document.getElementById("ahorro").value = "";
+  document.getElementById("hsp").value = "";
+  document.getElementById("perdidas").value = "";
+  document.getElementById("respaldo").value = "";
+
+  // Limpiar resultados y alertas
   document.getElementById("resultados").innerHTML =
     "<p>Introduce los datos y presiona “Calcular sistema”.</p>";
 
   document.getElementById("alertas").innerHTML = "";
 
+  // Aplicar lógica de sistema (deshabilita respaldo)
   actualizarRespaldo();
 }
+
+
