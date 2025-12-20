@@ -131,24 +131,17 @@ function calcularSistema() {
         resultado += `<p><strong>Horas de respaldo:</strong> ${respaldo} h</p>`;
     }
 
-    resultado += `
-        <h4>💰 Resultados económicos</h4>
-        <p><strong>Vida útil considerada:</strong> ${vidaUtil} años</p>
-        <p><strong>Ahorro estimado en toda la vida útil:</strong> $${(ahorroAnual * vidaUtil).toFixed(2)}</p>
+   resultado += `
+    <h4>💰 Resultados económicos</h4>
+    <p><strong>Ahorro mensual:</strong> $${ahorroMensual.toFixed(2)}</p>
+    <p><strong>Ahorro anual:</strong> $${ahorroAnual.toFixed(2)}</p>
+    <p><strong>Costo estimado del sistema:</strong> $${costoSistema.toFixed(2)}</p>
+    <p><strong>ROI anual:</strong> ${roi.toFixed(1)} %</p>
+    <p><strong>Tiempo de recuperación:</strong> ${payback.toFixed(1)} años</p>
+    <p><strong>Vida útil considerada:</strong> ${vidaUtil} años</p>
+    <p><strong>Ahorro estimado durante la vida útil:</strong> $${(ahorroAnual * vidaUtil).toFixed(2)}</p>
+`;
 
-        <p><strong>Ahorro mensual:</strong> $${ahorroMensual.toFixed(2)}</p>
-        <p><strong>Ahorro anual:</strong> $${ahorroAnual.toFixed(2)}</p>
-        <p><strong>Costo estimado del sistema:</strong> $${costoSistema.toFixed(2)}</p>
-        <p><strong>ROI anual:</strong> ${roi.toFixed(1)} %</p>
-        <p><strong>Tiempo de recuperación:</strong> ${payback.toFixed(1)} años</p>
-
-        <p><strong>Vida útil considerada:</strong> ${vidaUtil} años</p>
-        <p><strong>Ahorro estimado durante la vida útil:</strong> $${(ahorroAnual * vidaUtil).toFixed(2)}</p>
-
-    `;
-
-    document.getElementById("resultados").innerHTML = resultado;
-}
 
 // ===============================
 // Nueva cotización
@@ -170,6 +163,7 @@ function nuevaCotizacion() {
     document.getElementById("resultados").innerHTML =
         "<p>Introduce los datos y presiona “Calcular sistema”.</p>";
 }
+
 
 
 
