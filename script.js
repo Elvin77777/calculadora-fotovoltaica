@@ -116,31 +116,46 @@ function calcularSistema() {
     const payback = costoSistema / ahorroAnual;
 
     // ===== RESULTADOS =====
-    let resultado = `
-        <h3>Resultado del sistema</h3>
+   let resultado = `
+    <div class="resumen">
+        <h3>Resumen del sistema propuesto</h3>
+        <p>
+            Este sistema solar cubrirá aproximadamente el 
+            <strong>${ahorro}%</strong> de su consumo eléctrico mensual y
+            le permitirá ahorrar alrededor de 
+            <strong>$${ahorroMensual.toFixed(2)} al mes</strong>.
+        </p>
+    </div>
 
-        <h4>🔋 Datos energéticos</h4>
-        <p><strong>Tipo de sistema:</strong> ${tipoSistema}</p>
-        <p><strong>Consumo cubierto:</strong> ${consumoCubierto.toFixed(1)} kWh/mes</p>
-        <p><strong>Potencia instalada:</strong> ${potenciaInstalada.toFixed(2)} kWp</p>
-        <p><strong>Panel recomendado:</strong> ${potenciaPanel} W</p>
-        <p><strong>Cantidad de paneles:</strong> ${cantidadPaneles}</p>
-    `;
+    <div class="resultados-grid">
 
-    if (tipoSistema !== "red") {
-        resultado += `<p><strong>Horas de respaldo:</strong> ${respaldo} h</p>`;
-    }
+        <div class="card energia">
+            <h4>🔋 Sistema solar</h4>
+            <p><strong>Tipo de sistema:</strong> ${tipoSistema}</p>
+            <p><strong>Tamaño del sistema:</strong> ${potenciaInstalada.toFixed(2)} kWp</p>
+            <p><strong>Panel recomendado:</strong> ${potenciaPanel} W</p>
+            <p><strong>Cantidad de paneles:</strong> ${cantidadPaneles}</p>
+            ${tipoSistema !== "red" ? `<p><strong>Horas de respaldo:</strong> ${respaldo} h</p>` : ""}
+        </div>
 
-   resultado += `
-    <h4>💰 Resultados económicos</h4>
-    <p><strong>Ahorro mensual:</strong> $${ahorroMensual.toFixed(2)}</p>
-    <p><strong>Ahorro anual:</strong> $${ahorroAnual.toFixed(2)}</p>
-    <p><strong>Costo estimado del sistema:</strong> $${costoSistema.toFixed(2)}</p>
-    <p><strong>ROI anual:</strong> ${roi.toFixed(1)} %</p>
-    <p><strong>Tiempo de recuperación:</strong> ${payback.toFixed(1)} años</p>
-    <p><strong>Vida útil considerada:</strong> ${vidaUtil} años</p>
-    <p><strong>Ahorro estimado durante la vida útil:</strong> $${(ahorroAnual * vidaUtil).toFixed(2)}</p>
+        <div class="card economia">
+            <h4>💰 Ahorro económico</h4>
+            <p><strong>Ahorro mensual:</strong> $${ahorroMensual.toFixed(2)}</p>
+            <p><strong>Ahorro anual:</strong> $${ahorroAnual.toFixed(2)}</p>
+            <p><strong>Costo estimado del sistema:</strong> $${costoSistema.toFixed(2)}</p>
+            <p><strong>Vida útil considerada:</strong> ${vidaUtil} años</p>
+            <p><strong>Ahorro total estimado:</strong> $${(ahorroAnual * vidaUtil).toFixed(2)}</p>
+        </div>
+
+        <div class="card retorno">
+            <h4>📈 Retorno de inversión</h4>
+            <p><strong>ROI anual:</strong> ${roi.toFixed(1)} %</p>
+            <p><strong>Tiempo de recuperación:</strong> ${payback.toFixed(1)} años</p>
+        </div>
+
+    </div>
 `;
+
 
 
 // ===============================
@@ -163,6 +178,7 @@ function nuevaCotizacion() {
     document.getElementById("resultados").innerHTML =
         "<p>Introduce los datos y presiona “Calcular sistema”.</p>";
 }
+
 
 
 
