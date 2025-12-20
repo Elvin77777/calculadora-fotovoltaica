@@ -133,6 +133,9 @@ function calcularSistema() {
 
     resultado += `
         <h4>💰 Resultados económicos</h4>
+        <p><strong>Vida útil considerada:</strong> ${vidaUtil} años</p>
+        <p><strong>Ahorro estimado en toda la vida útil:</strong> $${(ahorroAnual * vidaUtil).toFixed(2)}</p>
+
         <p><strong>Ahorro mensual:</strong> $${ahorroMensual.toFixed(2)}</p>
         <p><strong>Ahorro anual:</strong> $${ahorroAnual.toFixed(2)}</p>
         <p><strong>Costo estimado del sistema:</strong> $${costoSistema.toFixed(2)}</p>
@@ -163,6 +166,7 @@ function nuevaCotizacion() {
     document.getElementById("resultados").innerHTML =
         "<p>Introduce los datos y presiona “Calcular sistema”.</p>";
 }
+
 
 
 
