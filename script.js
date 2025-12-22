@@ -40,7 +40,6 @@ function calcularSistema() {
 
     if (!validarFormulario()) return;
 
-    // === ENTRADAS ===
     const tipo = document.getElementById("tipoSistema").value;
     const consumo = parseFloat(document.getElementById("consumo").value);
     const ahorroPct = parseFloat(document.getElementById("ahorro").value);
@@ -51,7 +50,6 @@ function calcularSistema() {
     const costoSistema = parseFloat(document.getElementById("costoSistema").value || 0);
     const vidaUtil = parseInt(document.getElementById("vidaUtil").value);
 
-    // === CÁLCULOS TÉCNICOS ===
     const consumoCubierto = consumo * (ahorroPct / 100);
     const consumoDiario = consumoCubierto / 30;
     const energiaReal = consumoDiario / (1 - perdidas / 100);
@@ -60,64 +58,34 @@ function calcularSistema() {
     const potenciaPanel = 550;
     const paneles = Math.ceil((potenciaNecesaria * 1000) / potenciaPanel);
 
-    // === CÁLCULOS ECONÓMICOS ===
     const ahorroMensual = consumoCubierto * tarifa;
     const ahorroAnual = ahorroMensual * 12;
     const ahorroTotal = ahorroAnual * vidaUtil;
+    const tiempoRetorno = costoSistema > 0 ? (costoSistema / ahorroAnual) : null;
 
-    const tiempoRetorno =
-        costoSistema > 0 ? (costoSistema / ahorroAnual) : null;
-
-    // === ALERTA COMERCIAL ===
     let alertaClase = "alerta-verde";
-    let alertaTexto = "Sistema recomendado. Alta rentabilidad y buen retorno de inversión.";
+    let alertaTexto = "Sistema recomendado. Alta rentabilidad y buen retorno.";
 
     if (tiempoRetorno !== null) {
         if (tiempoRetorno > 9 || ahorroPct < 60) {
             alertaClase = "alerta-roja";
-            alertaTexto = "Retorno de inversión largo. Se recomienda optimizar el sistema.";
+            alertaTexto = "Retorno largo. Se recomienda optimizar el sistema.";
         } else if (tiempoRetorno > 6 || ahorroPct < 80) {
             alertaClase = "alerta-amarilla";
-            alertaTexto = "Sistema viable, pero puede mejorarse para mayor rentabilidad.";
+            alertaTexto = "Sistema viable, pero mejorable.";
         }
     }
 
-    // === RESULTADOS ===
     let html = `
         <h3>Resultados del sistema</h3>
 
         <div class="resultados-grid">
-
-            <div class="card">
-                <h4>Potencia requerida</h4>
-                <p>${potenciaNecesaria.toFixed(2)} kWp</p>
-            </div>
-
-            <div class="card">
-                <h4>Paneles solares</h4>
-                <p>${paneles} × ${potenciaPanel} W</p>
-            </div>
-
-            <div class="card">
-                <h4>Ahorro mensual</h4>
-                <p>$${ahorroMensual.toFixed(2)}</p>
-            </div>
-
-            <div class="card">
-                <h4>Ahorro anual</h4>
-                <p>$${ahorroAnual.toFixed(2)}</p>
-            </div>
-
-            <div class="card">
-                <h4>Tiempo de retorno</h4>
-                <p>${tiempoRetorno ? tiempoRetorno.toFixed(1) + " años" : "N/D"}</p>
-            </div>
-
-            <div class="card">
-                <h4>Ahorro en ${vidaUtil} años</h4>
-                <p>$${ahorroTotal.toFixed(2)}</p>
-            </div>
-
+            <div class="card"><h4>Potencia requerida</h4><p>${potenciaNecesaria.toFixed(2)} kWp</p></div>
+            <div class="card"><h4>Paneles</h4><p>${paneles} × ${potenciaPanel} W</p></div>
+            <div class="card"><h4>Ahorro mensual</h4><p>$${ahorroMensual.toFixed(2)}</p></div>
+            <div class="card"><h4>Ahorro anual</h4><p>$${ahorroAnual.toFixed(2)}</p></div>
+            <div class="card"><h4>Tiempo de retorno</h4><p>${tiempoRetorno ? tiempoRetorno.toFixed(1) + " años" : "N/D"}</p></div>
+            <div class="card"><h4>Ahorro en ${vidaUtil} años</h4><p>$${ahorroTotal.toFixed(2)}</p></div>
         </div>
 
         <div class="alerta ${alertaClase}">
@@ -126,14 +94,35 @@ function calcularSistema() {
     `;
 
     if (tipo !== "red" && respaldo < 6) {
-        html += `
-            <div class="alerta alerta-amarilla">
-                Respaldo bajo para sistema con baterías. Se recomienda mayor autonomía.
-            </div>
-        `;
+        html += `<div class="alerta alerta-amarilla">
+            Respaldo bajo para sistema con baterías.
+        </div>`;
     }
 
     document.getElementById("resultados").innerHTML = html;
+
+    dibujarGrafica(consumo, consumoCubierto, ahorroMensual);
+}
+
+function dibujarGrafica(consumo, consumoCubierto, ahorroMensual) {
+    const canvas = document.getElementById("grafica");
+    const ctx = canvas.getContext("2d");
+    document.getElementById("grafica-container").style.display = "block";
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const valores = [consumo, consumoCubierto, ahorroMensual];
+    const etiquetas = ["Consumo", "Cubierto", "Ahorro"];
+    const max = Math.max(...valores);
+    const escala = 200 / max;
+
+    valores.forEach((v, i) => {
+        ctx.fillStyle = "#1e88e5";
+        ctx.fillRect(80 + i * 150, 250 - v * escala, 60, v * escala);
+        ctx.fillStyle = "#000";
+        ctx.fillText(etiquetas[i], 80 + i * 150, 270);
+        ctx.fillText(v.toFixed(1), 80 + i * 150, 240 - v * escala);
+    });
 }
 
 function nuevaCotizacion() {
@@ -145,7 +134,7 @@ function nuevaCotizacion() {
     document.getElementById("tarifa").value = 0.22;
     document.getElementById("vidaUtil").value = 25;
     controlarRespaldo();
+    document.getElementById("grafica-container").style.display = "none";
     document.getElementById("resultados").innerHTML =
         "<p>Introduce los datos y presiona “Calcular sistema”.</p>";
 }
-
