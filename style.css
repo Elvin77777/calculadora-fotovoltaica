@@ -1,169 +1,102 @@
-/* Reset básico */
 * {
     box-sizing: border-box;
     font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Fondo general */
 body {
     margin: 0;
     min-height: 100vh;
-    background-image: url("img/fondo.jpg"); /* coloca la imagen en la misma carpeta */
+    background-image: url("img/fondo.jpg");
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
 }
 
-/* Contenedor principal */
 .contenedor {
-    width: 100%;
-    max-width: 520px;
     background: rgba(255, 255, 255, 0.95);
-    padding: 25px 30px;
-    border-radius: 10px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    width: 100%;
+    max-width: 700px;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.25);
 }
 
-/* Títulos */
-.contenedor h1 {
+h1, h3 {
     text-align: center;
-    margin-bottom: 10px;
-    color: #1f2933;
 }
 
-.contenedor h3 {
-    text-align: center;
-    margin-bottom: 20px;
-    font-weight: normal;
-    color: #4a5568;
-}
-
-/* Labels */
 label {
+    margin-top: 12px;
     display: block;
-    margin-top: 15px;
     font-weight: bold;
-    color: #2d3748;
 }
 
-/* Inputs y selects */
-input,
-select {
+input, select {
     width: 100%;
     padding: 10px;
     margin-top: 6px;
     border-radius: 6px;
-    border: 1px solid #cbd5e0;
-    font-size: 14px;
+    border: 1px solid #ccc;
 }
 
-/* Campo deshabilitado */
-input:disabled {
-    background-color: #edf2f7;
-    color: #718096;
-}
-
-/* Botones */
 button {
     width: 100%;
-    margin-top: 20px;
     padding: 12px;
+    margin-top: 15px;
+    background: #1e88e5;
+    color: white;
     border: none;
-    border-radius: 6px;
-    font-size: 15px;
-    font-weight: bold;
+    border-radius: 8px;
+    font-size: 16px;
     cursor: pointer;
 }
 
-/* Botón principal */
-button {
-    background-color: #2563eb;
-    color: white;
-}
-
 button:hover {
-    background-color: #1d4ed8;
+    background: #1565c0;
 }
 
-/* Botón secundario */
 button.secundario {
-    background-color: #6b7280;
+    background: #6c757d;
 }
 
 button.secundario:hover {
-    background-color: #4b5563;
+    background: #545b62;
 }
 
-/* Resultados */
 #resultados {
-    margin-top: 25px;
-    padding: 15px;
-    border-radius: 6px;
-    background-color: #f8fafc;
-    border-left: 4px solid #2563eb;
-    color: #1f2933;
+    margin-top: 30px;
 }
 
-#resultados h3 {
-    margin-top: 0;
-}
-
-/* Responsive */
-@media (max-width: 480px) {
-    .contenedor {
-        padding: 20px;
-    }
-}
-
-.resumen {
-    background: #f4f8fb;
-    border-left: 5px solid #2c7be5;
-    padding: 15px;
-    margin-bottom: 20px;
-    border-radius: 6px;
-}
-
-.resumen h3 {
-    margin-top: 0;
-    color: #2c7be5;
-}
+/* ===================== */
+/* TARJETAS DE RESULTADO */
+/* ===================== */
 
 .resultados-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
 }
 
 .card {
-    background: #ffffff;
+    background: #f5f7fa;
     border-radius: 10px;
-    padding: 18px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
 }
 
 .card h4 {
-    margin-top: 0;
-    margin-bottom: 10px;
+    margin: 0;
+    font-size: 14px;
+    color: #555;
 }
 
 .card p {
-    margin: 6px 0;
+    margin: 8px 0 0;
+    font-size: 20px;
+    font-weight: bold;
+    color: #1e88e5;
 }
-
-.card.energia {
-    border-top: 4px solid #4dabf7;
-}
-
-.card.economia {
-    border-top: 4px solid #2fb344;
-}
-
-.card.retorno {
-    border-top: 4px solid #f59f00;
-}
-
-
-
