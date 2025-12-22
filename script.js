@@ -54,7 +54,7 @@ function validarFormulario() {
     }
 
     if ((tipoSistema === "hibrido" || tipoSistema === "aislado") && respaldo === "") {
-        alert("Debes indicar las horas de respaldo para este tipo de sistema.");
+        alert("Debes indicar las horas de respaldo.");
         return false;
     }
 
@@ -77,35 +77,26 @@ function calcularSistema() {
     const perdidas = parseFloat(document.getElementById("perdidas").value);
     const respaldo = document.getElementById("respaldo").value;
 
-    // -------------------------------
-    // CÁLCULOS ENERGÉTICOS
-    // -------------------------------
+    // Energía
     const consumoCubierto = consumo * (ahorro / 100);
     const consumoDiario = consumoCubierto / 30;
     const energiaReal = consumoDiario / (1 - perdidas / 100);
     const potenciaNecesaria = energiaReal / horasSol;
 
-    // -------------------------------
-    // PANELES
-    // -------------------------------
-    const potenciaPanel = 550; // W (recomendación automática)
+    // Paneles
+    const potenciaPanel = 550;
     const cantidadPaneles = Math.ceil((potenciaNecesaria * 1000) / potenciaPanel);
     const potenciaInstalada = (cantidadPaneles * potenciaPanel) / 1000;
 
-    // -------------------------------
-    // ECONOMÍA (BASE)
-    // -------------------------------
-    const tarifa = 0.22; // USD/kWh (editable a futuro)
-    const costoSistema = potenciaInstalada * 1100; // USD estimado
+    // Economía
+    const tarifa = 0.22;
+    const costoSistema = potenciaInstalada * 1100;
     const ahorroMensual = consumoCubierto * tarifa;
     const ahorroAnual = ahorroMensual * 12;
     const vidaUtil = 25;
     const payback = costoSistema / ahorroAnual;
     const roi = (ahorroAnual / costoSistema) * 100;
 
-    // -------------------------------
-    // RESULTADOS (TARJETAS)
-    // -------------------------------
     let resultado = `
         <div class="resumen">
             <h3>Resumen del sistema propuesto</h3>
@@ -121,7 +112,7 @@ function calcularSistema() {
 
             <div class="card energia">
                 <h4>🔋 Sistema solar</h4>
-                <p><strong>Tipo de sistema:</strong> ${tipoSistema}</p>
+                <p><strong>Tipo:</strong> ${tipoSistema}</p>
                 <p><strong>Potencia instalada:</strong> ${potenciaInstalada.toFixed(2)} kWp</p>
                 <p><strong>Panel recomendado:</strong> ${potenciaPanel} W</p>
                 <p><strong>Cantidad de paneles:</strong> ${cantidadPaneles}</p>
@@ -132,15 +123,15 @@ function calcularSistema() {
                 <h4>💰 Ahorro económico</h4>
                 <p><strong>Ahorro mensual:</strong> $${ahorroMensual.toFixed(2)}</p>
                 <p><strong>Ahorro anual:</strong> $${ahorroAnual.toFixed(2)}</p>
-                <p><strong>Costo estimado del sistema:</strong> $${costoSistema.toFixed(2)}</p>
-                <p><strong>Vida útil considerada:</strong> ${vidaUtil} años</p>
-                <p><strong>Ahorro total estimado:</strong> $${(ahorroAnual * vidaUtil).toFixed(2)}</p>
+                <p><strong>Costo estimado:</strong> $${costoSistema.toFixed(2)}</p>
+                <p><strong>Vida útil:</strong> ${vidaUtil} años</p>
+                <p><strong>Ahorro total:</strong> $${(ahorroAnual * vidaUtil).toFixed(2)}</p>
             </div>
 
             <div class="card retorno">
-                <h4>📈 Retorno de inversión</h4>
+                <h4>📈 Retorno</h4>
                 <p><strong>ROI anual:</strong> ${roi.toFixed(1)} %</p>
-                <p><strong>Tiempo de recuperación:</strong> ${payback.toFixed(1)} años</p>
+                <p><strong>Payback:</strong> ${payback.toFixed(1)} años</p>
             </div>
 
         </div>
