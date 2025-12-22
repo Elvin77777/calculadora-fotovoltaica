@@ -17,15 +17,11 @@ function controlarRespaldo() {
 }
 
 function validarFormulario() {
-    const campos = [
-        "consumo", "ahorro", "horasSol",
-        "perdidas", "tarifa", "vidaUtil"
-    ];
-
-    for (let id of campos) {
-        const valor = parseFloat(document.getElementById(id).value);
-        if (isNaN(valor) || valor <= 0) {
-            alert("Revisa los valores ingresados.");
+    const ids = ["consumo", "ahorro", "horasSol", "perdidas", "tarifa", "vidaUtil"];
+    for (let id of ids) {
+        const v = parseFloat(document.getElementById(id).value);
+        if (isNaN(v) || v <= 0) {
+            alert("Revisa los datos ingresados.");
             return false;
         }
     }
@@ -34,10 +30,9 @@ function validarFormulario() {
     const respaldo = document.getElementById("respaldo").value;
 
     if ((tipo === "hibrido" || tipo === "aislado") && respaldo === "") {
-        alert("Debes indicar las horas de respaldo.");
+        alert("Indica las horas de respaldo.");
         return false;
     }
-
     return true;
 }
 
@@ -63,8 +58,7 @@ function calcularSistema() {
     const potenciaPanel = 550;
     const paneles = Math.ceil((potenciaNecesaria * 1000) / potenciaPanel);
 
-    const ahorroMensual = consumoCubierto * tarifa;
-    const ahorroAnual = ahorroMensual * 12;
+    const ahorroAnual = consumoCubierto * tarifa * 12;
     const ahorroTotal = ahorroAnual * vidaUtil;
     const payback = costoSistema > 0 ? (costoSistema / ahorroAnual).toFixed(1) : "N/D";
 
@@ -107,7 +101,7 @@ function calcularSistema() {
     `;
 
     if (tipo !== "red") {
-        html += `<p class="nota"><strong>Horas de respaldo:</strong> ${respaldo} h</p>`;
+        html += `<p class="nota">Horas de respaldo: ${respaldo} h</p>`;
     }
 
     document.getElementById("resultados").innerHTML = html;
@@ -121,10 +115,7 @@ function nuevaCotizacion() {
     document.getElementById("perdidas").value = 20;
     document.getElementById("tarifa").value = 0.22;
     document.getElementById("vidaUtil").value = 25;
-
     controlarRespaldo();
-
     document.getElementById("resultados").innerHTML =
         "<p>Introduce los datos y presiona “Calcular sistema”.</p>";
 }
-
