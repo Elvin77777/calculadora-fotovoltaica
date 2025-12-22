@@ -60,7 +60,21 @@ function calcularSistema() {
 
     const ahorroAnual = consumoCubierto * tarifa * 12;
     const ahorroTotal = ahorroAnual * vidaUtil;
-    const payback = costoSistema > 0 ? (costoSistema / ahorroAnual).toFixed(1) : "N/D";
+    const payback = costoSistema > 0 ? (costoSistema / ahorroAnual) : null;
+
+    // ===== ALERTA COMERCIAL =====
+    let alertaClase = "alerta-verde";
+    let alertaTexto = "Sistema óptimo. Alta rentabilidad y retorno rápido.";
+
+    if (payback !== null) {
+        if (payback > 9 || ahorro < 60) {
+            alertaClase = "alerta-roja";
+            alertaTexto = "Retorno de inversión largo. Se recomienda redimensionar el sistema.";
+        } else if (payback > 6 || ahorro < 80) {
+            alertaClase = "alerta-amarilla";
+            alertaTexto = "Sistema viable, pero puede optimizarse para mejorar el retorno.";
+        }
+    }
 
     let html = `
         <h3>Resultados del sistema</h3>
@@ -94,14 +108,20 @@ function calcularSistema() {
 
             <div class="card">
                 <h4>Payback</h4>
-                <p>${payback} años</p>
+                <p>${payback ? payback.toFixed(1) + " años" : "N/D"}</p>
             </div>
 
         </div>
+
+        <div class="alerta ${alertaClase}">
+            ${alertaTexto}
+        </div>
     `;
 
-    if (tipo !== "red") {
-        html += `<p class="nota">Horas de respaldo: ${respaldo} h</p>`;
+    if (tipo !== "red" && respaldo < 6) {
+        html += `<div class="alerta alerta-amarilla">
+            Respaldo bajo para sistema con baterías. Considera mayor autonomía.
+        </div>`;
     }
 
     document.getElementById("resultados").innerHTML = html;
@@ -119,3 +139,4 @@ function nuevaCotizacion() {
     document.getElementById("resultados").innerHTML =
         "<p>Introduce los datos y presiona “Calcular sistema”.</p>";
 }
+
