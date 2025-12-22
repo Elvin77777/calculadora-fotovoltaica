@@ -17,10 +17,10 @@ function controlarRespaldo() {
 }
 
 function validarFormulario() {
-    const ids = ["consumo", "ahorro", "horasSol", "perdidas", "tarifa", "vidaUtil"];
-    for (let id of ids) {
-        const v = parseFloat(document.getElementById(id).value);
-        if (isNaN(v) || v <= 0) {
+    const campos = ["consumo", "ahorro", "horasSol", "perdidas", "tarifa", "vidaUtil"];
+    for (let id of campos) {
+        const valor = parseFloat(document.getElementById(id).value);
+        if (isNaN(valor) || valor <= 0) {
             alert("Revisa los datos ingresados.");
             return false;
         }
@@ -30,7 +30,7 @@ function validarFormulario() {
     const respaldo = document.getElementById("respaldo").value;
 
     if ((tipo === "hibrido" || tipo === "aislado") && respaldo === "") {
-        alert("Indica las horas de respaldo.");
+        alert("Debes indicar las horas de respaldo.");
         return false;
     }
     return true;
@@ -50,8 +50,8 @@ function calcularSistema() {
     const costoSistema = parseFloat(document.getElementById("costoSistema").value || 0);
     const vidaUtil = parseInt(document.getElementById("vidaUtil").value);
 
-    // === CÁLCULOS ===
-    const consumoCubierto = consumo * (ahorroPct / 100); // kWh
+    // ===== CÁLCULOS ENERGÉTICOS =====
+    const consumoCubierto = consumo * (ahorroPct / 100);
     const consumoDiario = consumoCubierto / 30;
     const energiaReal = consumoDiario / (1 - perdidas / 100);
     const potenciaNecesaria = energiaReal / horasSol;
@@ -59,14 +59,16 @@ function calcularSistema() {
     const potenciaPanel = 550;
     const paneles = Math.ceil((potenciaNecesaria * 1000) / potenciaPanel);
 
+    // ===== CÁLCULOS ECONÓMICOS =====
+    const costoMensualActual = consumo * tarifa; // $
     const ahorroMensual = consumoCubierto * tarifa; // $
     const ahorroAnual = ahorroMensual * 12;
     const ahorroTotal = ahorroAnual * vidaUtil;
     const tiempoRetorno = costoSistema > 0 ? (costoSistema / ahorroAnual) : null;
 
-    // === ALERTA ===
+    // ===== ALERTA =====
     let alertaClase = "alerta-verde";
-    let alertaTexto = "Sistema recomendado. Alta rentabilidad y buen retorno.";
+    let alertaTexto = "Sistema recomendado. Alta rentabilidad.";
 
     if (tiempoRetorno !== null) {
         if (tiempoRetorno > 9 || ahorroPct < 60) {
@@ -84,8 +86,8 @@ function calcularSistema() {
         <div class="resultados-grid">
             <div class="card"><h4>Potencia requerida</h4><p>${potenciaNecesaria.toFixed(2)} kWp</p></div>
             <div class="card"><h4>Paneles</h4><p>${paneles} × ${potenciaPanel} W</p></div>
+            <div class="card"><h4>Costo mensual actual</h4><p>$${costoMensualActual.toFixed(2)}</p></div>
             <div class="card"><h4>Ahorro mensual</h4><p>$${ahorroMensual.toFixed(2)}</p></div>
-            <div class="card"><h4>Ahorro anual</h4><p>$${ahorroAnual.toFixed(2)}</p></div>
             <div class="card"><h4>Tiempo de retorno</h4><p>${tiempoRetorno ? tiempoRetorno.toFixed(1) + " años" : "N/D"}</p></div>
             <div class="card"><h4>Ahorro en ${vidaUtil} años</h4><p>$${ahorroTotal.toFixed(2)}</p></div>
         </div>
@@ -95,45 +97,43 @@ function calcularSistema() {
         </div>
     `;
 
-    if (tipo !== "red" && respaldo < 6) {
-        html += `<div class="alerta alerta-amarilla">
-            Respaldo bajo para sistema con baterías.
-        </div>`;
-    }
-
     document.getElementById("resultados").innerHTML = html;
 
-    // === GRÁFICA ===
-    dibujarGrafica(consumo, consumoCubierto, ahorroMensual);
+    dibujarGrafica(consumo, consumoCubierto, costoMensualActual, ahorroMensual);
 }
 
-function dibujarGrafica(consumoKWh, cubiertoKWh, ahorroUSD) {
+function dibujarGrafica(consumoKWh, cubiertoKWh, costoUSD, ahorroUSD) {
+
     const canvas = document.getElementById("grafica");
     const ctx = canvas.getContext("2d");
     document.getElementById("grafica-container").style.display = "block";
-
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const valores = [consumoKWh, cubiertoKWh, ahorroUSD];
-    const etiquetas = ["Consumo (kWh)", "Cubierto (kWh)", "Ahorro ($)"];
-    const unidades = ["kWh", "kWh", "$"];
+    const valores = [consumoKWh, cubiertoKWh, costoUSD, ahorroUSD];
+    const etiquetas = [
+        "Consumo (kWh)",
+        "Cubierto (kWh)",
+        "Costo ($)",
+        "Ahorro ($)"
+    ];
+    const unidades = ["kWh", "kWh", "$", "$"];
 
     const max = Math.max(...valores);
     const escala = 200 / max;
 
     valores.forEach((v, i) => {
         ctx.fillStyle = "#1e88e5";
-        ctx.fillRect(80 + i * 150, 250 - v * escala, 60, v * escala);
+        ctx.fillRect(60 + i * 130, 250 - v * escala, 60, v * escala);
 
         ctx.fillStyle = "#000";
-        ctx.fillText(etiquetas[i], 65 + i * 150, 270);
+        ctx.fillText(etiquetas[i], 40 + i * 130, 270);
 
-        const textoValor =
+        const texto =
             unidades[i] === "$"
                 ? `$${v.toFixed(2)}`
                 : `${v.toFixed(1)} ${unidades[i]}`;
 
-        ctx.fillText(textoValor, 70 + i * 150, 240 - v * escala);
+        ctx.fillText(texto, 45 + i * 130, 235 - v * escala);
     });
 }
 
@@ -150,4 +150,3 @@ function nuevaCotizacion() {
     document.getElementById("resultados").innerHTML =
         "<p>Introduce los datos y presiona “Calcular sistema”.</p>";
 }
-
