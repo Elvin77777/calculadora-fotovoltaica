@@ -3,44 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <title>Calculadora de Sistema Fotovoltaico</title>
-
-    <!-- Protección por clave -->
-    <script>
-        if (sessionStorage.getItem("acceso") !== "ok") {
-            window.location.href = "index.html";
-        }
-    </script>
-
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="contenedor">
-    <h1>Calculadora de Sistema Fotovoltaico</h1>
 
+    <h1>Calculadora de Sistema Fotovoltaico</h1>
     <h3>Ingrese los datos del sistema que desea calcular</h3>
 
-    <label for="tipoSistema">Tipo de sistema:</label>
-    <select id="tipoSistema" onchange="controlarRespaldo()">
+    <label>Tipo de sistema:</label>
+    <select id="tipoSistema">
         <option value="red">En red</option>
         <option value="hibrido">Híbrido</option>
         <option value="aislado">Aislado</option>
     </select>
 
-    <label for="consumo">Consumo mensual (kWh):</label>
-    <input type="number" id="consumo" min="0">
+    <label>Consumo mensual (kWh):</label>
+    <input type="number" id="consumo">
 
-    <label for="ahorro">Ahorro deseado (%):</label>
-    <input type="number" id="ahorro">
+    <label>Ahorro deseado (%):</label>
+    <input type="number" id="ahorro" value="90">
 
-    <label for="horasSol">Horas solares pico (h/día):</label>
-    <input type="number" id="horasSol" step="0.1">
+    <label>Horas solares pico (h/día):</label>
+    <input type="number" id="horasSol" step="0.1" value="5.5">
 
-    <label for="perdidas">Pérdidas del sistema (%):</label>
-    <input type="number" id="perdidas">
+    <label>Pérdidas del sistema (%):</label>
+    <input type="number" id="perdidas" value="20">
 
-    <label for="respaldo">Horas de respaldo (solo híbrido / aislado):</label>
-    <input type="number" id="respaldo" min="0" disabled>
+    <label>Horas de respaldo (solo híbrido / aislado):</label>
+    <input type="number" id="respaldo" disabled>
+
+    <hr>
+
+    <h3>Datos económicos</h3>
+
+    <label>Tarifa eléctrica ($/kWh):</label>
+    <input type="number" id="tarifa" step="0.01" value="0.22">
+
+    <label>Costo estimado del sistema ($):</label>
+    <input type="number" id="costoSistema">
+
+    <label>Vida útil del sistema (años):</label>
+    <input type="number" id="vidaUtil" value="25">
 
     <button onclick="calcularSistema()">Calcular sistema</button>
     <button class="secundario" onclick="nuevaCotizacion()">Nueva cotización</button>
@@ -48,10 +53,9 @@
     <div id="resultados">
         <p>Introduce los datos y presiona “Calcular sistema”.</p>
     </div>
+
 </div>
 
-<!-- SCRIPT PRINCIPAL (MUY IMPORTANTE defer) -->
-<script src="script.js" defer></script>
-
+<script src="script.js"></script>
 </body>
 </html>
