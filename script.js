@@ -111,10 +111,10 @@ function dibujarGrafica(consumoKWh, cubiertoKWh, costoUSD, ahorroUSD) {
 
     const valores = [consumoKWh, cubiertoKWh, costoUSD, ahorroUSD];
     const etiquetas = [
-        "Consumo (kWh)",
-        "Cubierto (kWh)",
-        "Costo ($)",
-        "Ahorro ($)"
+        "Consumo Total (kWh)",
+        "Consumo Cubierto (kWh)",
+        "Costo Total ($)",
+        "Ahorro Estimado ($)"
     ];
     const unidades = ["kWh", "kWh", "$", "$"];
 
@@ -150,3 +150,4 @@ function nuevaCotizacion() {
     document.getElementById("resultados").innerHTML =
         "<p>Introduce los datos y presiona “Calcular sistema”.</p>";
 }
+
