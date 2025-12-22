@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Calculadora de Sistema Fotovoltaico</title>
-    <link rel="stylesheet" href="style.css">
 
     <!-- Protección por clave -->
     <script>
@@ -11,16 +10,15 @@
             window.location.href = "index.html";
         }
     </script>
+
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="contenedor">
     <h1>Calculadora de Sistema Fotovoltaico</h1>
 
-    <!-- ===================== -->
-    <!-- DATOS TÉCNICOS -->
-    <!-- ===================== -->
-    <h3>Datos técnicos del sistema</h3>
+    <h3>Ingrese los datos del sistema que desea calcular</h3>
 
     <label for="tipoSistema">Tipo de sistema:</label>
     <select id="tipoSistema" onchange="controlarRespaldo()">
@@ -33,47 +31,27 @@
     <input type="number" id="consumo" min="0">
 
     <label for="ahorro">Ahorro deseado (%):</label>
-    <input type="number" id="ahorro" min="1" max="100">
+    <input type="number" id="ahorro">
 
     <label for="horasSol">Horas solares pico (h/día):</label>
     <input type="number" id="horasSol" step="0.1">
 
     <label for="perdidas">Pérdidas del sistema (%):</label>
-    <input type="number" id="perdidas" min="0" max="50">
+    <input type="number" id="perdidas">
 
     <label for="respaldo">Horas de respaldo (solo híbrido / aislado):</label>
     <input type="number" id="respaldo" min="0" disabled>
 
-    <!-- ===================== -->
-    <!-- DATOS ECONÓMICOS -->
-    <!-- ===================== -->
-    <h3>Datos económicos</h3>
-
-    <label for="tarifa">Tarifa eléctrica (USD / kWh):</label>
-    <input type="number" id="tarifa" step="0.01" min="0">
-
-    <label for="precioKwp">Precio del sistema (USD / kWp):</label>
-    <input type="number" id="precioKwp" min="0">
-
-    <label for="vidaUtil">Vida útil del sistema (años):</label>
-    <input type="number" id="vidaUtil" min="1">
-
-    <!-- ===================== -->
-    <!-- BOTONES -->
-    <!-- ===================== -->
     <button onclick="calcularSistema()">Calcular sistema</button>
     <button class="secundario" onclick="nuevaCotizacion()">Nueva cotización</button>
 
-    <!-- ===================== -->
-    <!-- RESULTADOS -->
-    <!-- ===================== -->
     <div id="resultados">
         <p>Introduce los datos y presiona “Calcular sistema”.</p>
     </div>
 </div>
 
-<script src="script.js"></script>
+<!-- SCRIPT PRINCIPAL (MUY IMPORTANTE defer) -->
+<script src="script.js" defer></script>
+
 </body>
 </html>
-
-
