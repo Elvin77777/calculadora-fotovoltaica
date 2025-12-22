@@ -1,9 +1,8 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
     controlarRespaldo();
     document.getElementById("tipoSistema").addEventListener("change", controlarRespaldo);
 });
 
-// Control de horas de respaldo
 function controlarRespaldo() {
     const tipo = document.getElementById("tipoSistema").value;
     const respaldo = document.getElementById("respaldo");
@@ -17,63 +16,37 @@ function controlarRespaldo() {
     }
 }
 
-// Validaciones
 function validarFormulario() {
-    const consumo = parseFloat(consumoInput());
-    const ahorro = parseFloat(document.getElementById("ahorro").value);
-    const horasSol = parseFloat(document.getElementById("horasSol").value);
-    const perdidas = parseFloat(document.getElementById("perdidas").value);
-    const tarifa = parseFloat(document.getElementById("tarifa").value);
-    const vidaUtil = parseInt(document.getElementById("vidaUtil").value);
+    const campos = [
+        "consumo", "ahorro", "horasSol",
+        "perdidas", "tarifa", "vidaUtil"
+    ];
 
-    if (isNaN(consumo) || consumo <= 0) {
-        alert("Consumo mensual inválido.");
-        return false;
-    }
-
-    if (isNaN(ahorro) || ahorro <= 0 || ahorro > 100) {
-        alert("Ahorro debe estar entre 1 y 100%.");
-        return false;
-    }
-
-    if (isNaN(horasSol) || horasSol <= 0) {
-        alert("Horas solares inválidas.");
-        return false;
-    }
-
-    if (isNaN(perdidas) || perdidas < 0 || perdidas > 50) {
-        alert("Pérdidas fuera de rango (0–50%).");
-        return false;
-    }
-
-    if (isNaN(tarifa) || tarifa <= 0) {
-        alert("Tarifa eléctrica inválida.");
-        return false;
-    }
-
-    if (isNaN(vidaUtil) || vidaUtil <= 0) {
-        alert("Vida útil inválida.");
-        return false;
+    for (let id of campos) {
+        const valor = parseFloat(document.getElementById(id).value);
+        if (isNaN(valor) || valor <= 0) {
+            alert("Revisa los valores ingresados.");
+            return false;
+        }
     }
 
     const tipo = document.getElementById("tipoSistema").value;
     const respaldo = document.getElementById("respaldo").value;
 
     if ((tipo === "hibrido" || tipo === "aislado") && respaldo === "") {
-        alert("Debe indicar horas de respaldo.");
+        alert("Debes indicar las horas de respaldo.");
         return false;
     }
 
     return true;
 }
 
-// Función principal
 function calcularSistema() {
 
     if (!validarFormulario()) return;
 
     const tipo = document.getElementById("tipoSistema").value;
-    const consumo = parseFloat(consumoInput());
+    const consumo = parseFloat(document.getElementById("consumo").value);
     const ahorro = parseFloat(document.getElementById("ahorro").value);
     const horasSol = parseFloat(document.getElementById("horasSol").value);
     const perdidas = parseFloat(document.getElementById("perdidas").value);
@@ -92,29 +65,54 @@ function calcularSistema() {
 
     const ahorroMensual = consumoCubierto * tarifa;
     const ahorroAnual = ahorroMensual * 12;
-    const ahorroVidaUtil = ahorroAnual * vidaUtil;
-
-    let payback = costoSistema > 0 ? (costoSistema / ahorroAnual).toFixed(1) : "N/D";
+    const ahorroTotal = ahorroAnual * vidaUtil;
+    const payback = costoSistema > 0 ? (costoSistema / ahorroAnual).toFixed(1) : "N/D";
 
     let html = `
         <h3>Resultados del sistema</h3>
-        <p><strong>Tipo de sistema:</strong> ${tipo}</p>
-        <p><strong>Potencia requerida:</strong> ${potenciaNecesaria.toFixed(2)} kWp</p>
-        <p><strong>Cantidad de paneles:</strong> ${paneles} (${potenciaPanel} W)</p>
-        <p><strong>Ahorro anual:</strong> $${ahorroAnual.toFixed(2)}</p>
-        <p><strong>Vida útil considerada:</strong> ${vidaUtil} años</p>
-        <p><strong>Ahorro total estimado:</strong> $${ahorroVidaUtil.toFixed(2)}</p>
-        <p><strong>Payback estimado:</strong> ${payback} años</p>
+
+        <div class="resultados-grid">
+
+            <div class="card">
+                <h4>Potencia requerida</h4>
+                <p>${potenciaNecesaria.toFixed(2)} kWp</p>
+            </div>
+
+            <div class="card">
+                <h4>Paneles solares</h4>
+                <p>${paneles} × ${potenciaPanel} W</p>
+            </div>
+
+            <div class="card">
+                <h4>Ahorro anual</h4>
+                <p>$${ahorroAnual.toFixed(2)}</p>
+            </div>
+
+            <div class="card">
+                <h4>Vida útil</h4>
+                <p>${vidaUtil} años</p>
+            </div>
+
+            <div class="card">
+                <h4>Ahorro total</h4>
+                <p>$${ahorroTotal.toFixed(2)}</p>
+            </div>
+
+            <div class="card">
+                <h4>Payback</h4>
+                <p>${payback} años</p>
+            </div>
+
+        </div>
     `;
 
     if (tipo !== "red") {
-        html += `<p><strong>Horas de respaldo:</strong> ${respaldo} h</p>`;
+        html += `<p class="nota"><strong>Horas de respaldo:</strong> ${respaldo} h</p>`;
     }
 
     document.getElementById("resultados").innerHTML = html;
 }
 
-// Limpieza total
 function nuevaCotizacion() {
     document.querySelectorAll("input").forEach(i => i.value = "");
     document.getElementById("tipoSistema").value = "red";
@@ -130,6 +128,3 @@ function nuevaCotizacion() {
         "<p>Introduce los datos y presiona “Calcular sistema”.</p>";
 }
 
-function consumoInput() {
-    return document.getElementById("consumo").value;
-}
