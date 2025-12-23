@@ -3,9 +3,9 @@ document.addEventListener("DOMContentLoaded", () => {
     controlarBaterias();
 });
 
-/* ---------------------------
+/* =========================
    CONTROL VISUAL
---------------------------- */
+========================= */
 function controlarRespaldo() {
     const tipo = document.getElementById("tipoSistema").value;
     const respaldo = document.getElementById("respaldo");
@@ -22,13 +22,12 @@ function controlarRespaldo() {
 function controlarBaterias() {
     const tipo = document.getElementById("tipoSistema").value;
     const bloque = document.getElementById("bloqueBaterias");
-
     bloque.style.display = (tipo === "hibrido" || tipo === "aislado") ? "block" : "none";
 }
 
-/* ---------------------------
-   CONFIGURACIÓN BATERÍA
---------------------------- */
+/* =========================
+   CONFIGURACIÓN BATERÍAS
+========================= */
 function actualizarBateria() {
     const tipo = document.getElementById("tipoBateria").value;
     const dod = document.getElementById("dodBateria");
@@ -39,22 +38,23 @@ function actualizarBateria() {
     if (tipo === "plomo") dod.value = 50;
 }
 
-/* ---------------------------
+/* =========================
    VALIDACIÓN
---------------------------- */
+========================= */
 function validarFormulario() {
-    const consumo = document.getElementById("consumo").value;
-    if (!consumo || consumo <= 0) {
-        alert("Ingrese un consumo mensual válido.");
+    const consumo = parseFloat(document.getElementById("consumo").value);
+    if (isNaN(consumo) || consumo <= 0) {
+        alert("Ingrese un consumo mensual válido en kWh.");
         return false;
     }
     return true;
 }
 
-/* ---------------------------
+/* =========================
    CÁLCULO PRINCIPAL
---------------------------- */
+========================= */
 function calcularSistema() {
+
     if (!validarFormulario()) return;
 
     const tipoSistema = document.getElementById("tipoSistema").value;
@@ -64,20 +64,24 @@ function calcularSistema() {
     const perdidas = parseFloat(document.getElementById("perdidas").value);
     const respaldoHoras = tipoSistema === "red" ? 0 : parseFloat(document.getElementById("respaldo").value);
 
-    /* ENERGÍA */
+    /* ===== ENERGÍA ===== */
     const consumoCubierto = consumoMensual * (ahorro / 100);
-    const consumoDiario = consumoCubierto / 30;
+    const consumoDiario = consumoCubierto / 30;            // kWh/día
+    const consumoPorHora = consumoDiario / 24;             // kWh/h
+    const energiaRespaldo = consumoPorHora * respaldoHoras; // kWh
+
     const energiaReal = consumoDiario / (1 - perdidas / 100);
     const potenciaFV = energiaReal / horasSol;
 
-    /* PANELES */
+    /* ===== PANELES ===== */
     const potenciaPanel = 550;
     const vmpPanel = 41;
+
     const totalPaneles = Math.ceil((potenciaFV * 1000) / potenciaPanel);
     const panelesSerie = Math.floor(350 / vmpPanel);
     const panelesParalelo = Math.ceil(totalPaneles / panelesSerie);
 
-    /* INVERSOR */
+    /* ===== INVERSOR ===== */
     let factor = 1.1;
     if (tipoSistema === "hibrido") factor = 1.25;
     if (tipoSistema === "aislado") factor = 1.4;
@@ -86,39 +90,43 @@ function calcularSistema() {
     const opciones = [3, 5, 8, 10, 15];
     const inversor = opciones.find(v => v >= potenciaInversor) || 20;
 
-    /* BATERÍAS */
+    /* ===== BATERÍAS ===== */
     let tarjetaBateria = "";
 
     if (tipoSistema !== "red") {
+
         const voltajeBat = parseFloat(document.getElementById("voltajeBateria").value);
         const capacidadBat = parseFloat(document.getElementById("capacidadBateria").value);
         const dod = parseFloat(document.getElementById("dodBateria").value) / 100;
 
-        const energiaBat = voltajeBat * capacidadBat;
-        const energiaUtilBat = energiaBat * dod;
-        const energiaRespaldo = consumoDiario * respaldoHoras * 1000;
+        const energiaBatWh = voltajeBat * capacidadBat;        // Wh
+        const energiaUtilWh = energiaBatWh * dod;              // Wh útiles
+        const energiaRespaldoWh = energiaRespaldo * 1000;      // kWh → Wh
 
         let voltajeBanco = inversor > 5 ? 48 : 24;
-        const serie = voltajeBanco / voltajeBat;
-        const totalBaterias = Math.ceil(energiaRespaldo / energiaUtilBat);
-        const paralelo = Math.ceil(totalBaterias / serie);
+
+        const bateriasSerie = voltajeBanco / voltajeBat;
+        const bateriasTotales = Math.ceil(energiaRespaldoWh / energiaUtilWh);
+        const bateriasParalelo = Math.ceil(bateriasTotales / bateriasSerie);
+        const totalBaterias = bateriasSerie * bateriasParalelo;
 
         tarjetaBateria = `
         <div class="card">
             <h3>🔋 Banco de baterías</h3>
             <p>Batería individual: ${voltajeBat} V / ${capacidadBat} Ah</p>
             <p>Profundidad de descarga: ${dod * 100} %</p>
-            <p>Banco recomendado: ${voltajeBanco} V</p>
-            <p>Configuración: ${serie} en serie × ${paralelo} en paralelo</p>
-            <p>Total de baterías: ${serie * paralelo}</p>
+            <p>Voltaje del banco recomendado: ${voltajeBanco} V</p>
+            <p>Configuración: ${bateriasSerie} en serie × ${bateriasParalelo} en paralelo</p>
+            <p>Total de baterías: ${totalBaterias}</p>
+            <p>Energía útil total: ${(totalBaterias * energiaUtilWh / 1000).toFixed(2)} kWh</p>
         </div>`;
     }
 
-    /* RESULTADOS */
+    /* ===== RESULTADOS ===== */
     document.getElementById("resultados").innerHTML = `
     <div class="cards">
         <div class="card">
-            <h3>🔆 Paneles</h3>
+            <h3>🔆 Paneles solares</h3>
             <p>Total: ${totalPaneles}</p>
             <p>${panelesSerie} en serie × ${panelesParalelo} en paralelo</p>
         </div>
@@ -132,9 +140,9 @@ function calcularSistema() {
     </div>`;
 }
 
-/* ---------------------------
+/* =========================
    NUEVA COTIZACIÓN
---------------------------- */
+========================= */
 function nuevaCotizacion() {
     document.querySelectorAll("input").forEach(i => i.value = "");
     document.getElementById("tipoSistema").value = "red";
