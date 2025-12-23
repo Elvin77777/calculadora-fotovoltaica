@@ -8,9 +8,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-/* =====================================================
-   CONTROL DE HORAS DE RESPALDO
-===================================================== */
+/* =========================
+   CONTROL RESPALDO
+========================= */
 function controlarRespaldo() {
     const tipo = document.getElementById("tipoSistema").value;
     const respaldo = document.getElementById("respaldo");
@@ -24,33 +24,30 @@ function controlarRespaldo() {
     }
 }
 
-/* =====================================================
-   CONTROL DEL BLOQUE DE BATERÍAS
-===================================================== */
+/* =========================
+   CONTROL BLOQUE BATERÍAS
+========================= */
 function controlarBaterias() {
     const tipo = document.getElementById("tipoSistema").value;
     const bloque = document.getElementById("bloqueBaterias");
 
-    if (tipo === "hibrido" || tipo === "aislado") {
-        bloque.style.display = "block";
-    } else {
-        bloque.style.display = "none";
-    }
+    bloque.style.display =
+        (tipo === "hibrido" || tipo === "aislado") ? "block" : "none";
 }
 
-/* =====================================================
-   VALIDACIÓN GENERAL
-===================================================== */
+/* =========================
+   VALIDACIÓN
+========================= */
 function validarFormulario() {
     const consumo = parseFloat(document.getElementById("consumo").value);
-    const respaldo = document.getElementById("respaldo").value;
-
     if (isNaN(consumo) || consumo <= 0) {
         alert("Ingresa un consumo mensual válido.");
         return false;
     }
 
     const tipo = document.getElementById("tipoSistema").value;
+    const respaldo = document.getElementById("respaldo").value;
+
     if ((tipo === "hibrido" || tipo === "aislado") && respaldo === "") {
         alert("Debes indicar las horas de respaldo.");
         return false;
@@ -58,47 +55,77 @@ function validarFormulario() {
     return true;
 }
 
-/* =====================================================
+/* =========================
    CÁLCULO PRINCIPAL
-===================================================== */
+========================= */
 function calcularSistema() {
 
     if (!validarFormulario()) return;
 
-    /* ===== DATOS GENERALES ===== */
     const tipo = document.getElementById("tipoSistema").value;
-    const consumoMensual = parseFloat(document.getElementById("consumo").value); // kWh
+
+    /* ===== DATOS BASE ===== */
+    const consumoMensual = parseFloat(document.getElementById("consumo").value);
     const ahorroPct = parseFloat(document.getElementById("ahorro").value);
     const horasSol = parseFloat(document.getElementById("horasSol").value);
     const perdidas = parseFloat(document.getElementById("perdidas").value);
 
-    /* ===== CÁLCULO ENERGÉTICO FV (Nivel 1) ===== */
+    /* ===== CÁLCULO FV ===== */
     const consumoCubierto = consumoMensual * (ahorroPct / 100);
     const consumoDiario = consumoCubierto / 30;
     const energiaReal = consumoDiario / (1 - perdidas / 100);
-    const potenciaNecesaria = energiaReal / horasSol;
+    const potenciaFV = energiaReal / horasSol; // kWp
 
     const potenciaPanel = 550;
-    const paneles = Math.ceil((potenciaNecesaria * 1000) / potenciaPanel);
+    const paneles = Math.ceil((potenciaFV * 1000) / potenciaPanel);
 
-    /* ===== RESULTADO BASE ===== */
+    /* ===== FACTOR SEGÚN SISTEMA ===== */
+    let factorInversor = 1.0;
+    let tipoInversor = "";
+
+    if (tipo === "red") {
+        factorInversor = 1.20;
+        tipoInversor = "On-grid";
+    }
+    if (tipo === "hibrido") {
+        factorInversor = 1.15;
+        tipoInversor = "Híbrido";
+    }
+    if (tipo === "aislado") {
+        factorInversor = 1.00;
+        tipoInversor = "Off-grid";
+    }
+
+    /* ===== INVERSOR ===== */
+    const potenciaInversor = potenciaFV / factorInversor;
+    const potenciaInversorRedondeada = Math.ceil(potenciaInversor * 2) / 2;
+
+    /* ===== RESULTADOS BASE ===== */
     let html = `
         <h3>Resultados del sistema</h3>
         <div class="resultados-grid">
             <div class="card">
-                <h4>Potencia requerida</h4>
-                <p>${potenciaNecesaria.toFixed(2)} kWp</p>
+                <h4>Potencia FV requerida</h4>
+                <p>${potenciaFV.toFixed(2)} kWp</p>
             </div>
             <div class="card">
-                <h4>Paneles</h4>
+                <h4>Paneles solares</h4>
                 <p>${paneles} × ${potenciaPanel} W</p>
+            </div>
+            <div class="card">
+                <h4>Tipo de inversor</h4>
+                <p>${tipoInversor}</p>
+            </div>
+            <div class="card">
+                <h4>Potencia del inversor</h4>
+                <p>${potenciaInversorRedondeada.toFixed(1)} kW</p>
             </div>
         </div>
     `;
 
-    /* =====================================================
-       NIVEL 2 – CÁLCULO DE BATERÍAS
-    ===================================================== */
+    /* =========================
+       NIVEL 2 – BATERÍAS
+    ========================= */
     if (tipo === "hibrido" || tipo === "aislado") {
 
         const horasRespaldo = parseFloat(document.getElementById("respaldo").value);
@@ -107,30 +134,19 @@ function calcularSistema() {
         const dod = parseFloat(document.getElementById("dod").value) / 100;
         const eficiencia = parseFloat(document.getElementById("eficienciaBateria").value) / 100;
 
-        /* ----- PARÁMETROS DE BATERÍA POR TIPO ----- */
         let voltajeBateria = 12;
         let capacidadAh = 100;
 
-        if (tipoBateria === "litio") {
-            voltajeBateria = 12;
-            capacidadAh = 100;
-        } else if (tipoBateria === "agm" || tipoBateria === "gel") {
-            voltajeBateria = 12;
-            capacidadAh = 200;
-        } else {
-            voltajeBateria = 12;
-            capacidadAh = 150;
-        }
+        if (tipoBateria === "litio") capacidadAh = 100;
+        if (tipoBateria === "agm" || tipoBateria === "gel") capacidadAh = 200;
+        if (tipoBateria === "plomo") capacidadAh = 150;
 
-        /* ----- ENERGÍA A RESPALDAR ----- */
-        const energiaRespaldo = consumoDiario * (horasRespaldo / 24); // kWh
-        const energiaBanco = energiaRespaldo / (dod * eficiencia); // kWh reales
+        const energiaRespaldo = consumoDiario * (horasRespaldo / 24);
+        const energiaBanco = energiaRespaldo / (dod * eficiencia);
 
-        /* ----- CAPACIDAD DEL BANCO ----- */
         const capacidadWh = energiaBanco * 1000;
         const capacidadAhBanco = capacidadWh / voltajeBanco;
 
-        /* ----- CONFIGURACIÓN ----- */
         const bateriasSerie = voltajeBanco / voltajeBateria;
         const bateriasParalelo = Math.ceil(capacidadAhBanco / capacidadAh);
         const totalBaterias = bateriasSerie * bateriasParalelo;
@@ -138,17 +154,12 @@ function calcularSistema() {
         const capacidadTotalBanco =
             (voltajeBanco * capacidadAh * bateriasParalelo) / 1000;
 
-        /* ----- TARJETAS DE BATERÍAS ----- */
         html += `
             <h3>Banco de baterías</h3>
             <div class="resultados-grid">
                 <div class="card">
                     <h4>Energía a respaldar</h4>
                     <p>${energiaRespaldo.toFixed(2)} kWh</p>
-                </div>
-                <div class="card">
-                    <h4>Tipo de batería</h4>
-                    <p>${tipoBateria.toUpperCase()}</p>
                 </div>
                 <div class="card">
                     <h4>Banco</h4>
@@ -159,12 +170,8 @@ function calcularSistema() {
                     <p>${bateriasSerie}S × ${bateriasParalelo}P</p>
                 </div>
                 <div class="card">
-                    <h4>Total baterías</h4>
+                    <h4>Total de baterías</h4>
                     <p>${totalBaterias}</p>
-                </div>
-                <div class="card">
-                    <h4>Autonomía estimada</h4>
-                    <p>${horasRespaldo} h</p>
                 </div>
             </div>
         `;
@@ -173,9 +180,9 @@ function calcularSistema() {
     document.getElementById("resultados").innerHTML = html;
 }
 
-/* =====================================================
+/* =========================
    NUEVA COTIZACIÓN
-===================================================== */
+========================= */
 function nuevaCotizacion() {
     document.querySelectorAll("input").forEach(i => i.value = "");
     document.querySelectorAll("select").forEach(s => s.selectedIndex = 0);
