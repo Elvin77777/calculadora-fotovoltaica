@@ -108,3 +108,4 @@ function nuevaCotizacion() {
 
     document.querySelectorAll(".tarjeta").forEach(t => t.innerHTML = "");
 }
+
