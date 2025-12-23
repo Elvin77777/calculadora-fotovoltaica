@@ -2,92 +2,63 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Calculadora de Sistema Fotovoltaico</title>
+    <title>Calculadora Fotovoltaica</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="contenedor">
     <h1>Calculadora de Sistema Fotovoltaico</h1>
-    <h3>Ingrese los datos del sistema que desea calcular</h3>
 
-    <!-- ================== DATOS GENERALES ================== -->
-
-    <label for="tipoSistema">Tipo de sistema:</label>
+    <label>Tipo de sistema:</label>
     <select id="tipoSistema" onchange="controlarRespaldo(); controlarBaterias();">
         <option value="red">En red</option>
         <option value="hibrido">Híbrido</option>
         <option value="aislado">Aislado</option>
     </select>
 
-    <label for="consumo">Consumo mensual (kWh):</label>
-    <input type="number" id="consumo" min="0">
+    <label>Consumo mensual (kWh):</label>
+    <input type="number" id="consumo">
 
-    <label for="ahorro">Ahorro deseado (%):</label>
+    <label>Ahorro deseado (%):</label>
     <input type="number" id="ahorro" value="90">
 
-    <label for="horasSol">Horas solares pico (h/día):</label>
-    <input type="number" id="horasSol" step="0.1" value="5.5">
+    <label>Horas solares pico (h/día):</label>
+    <input type="number" id="horasSol" value="5.5" step="0.1">
 
-    <label for="perdidas">Pérdidas del sistema (%):</label>
+    <label>Pérdidas del sistema (%):</label>
     <input type="number" id="perdidas" value="20">
 
-    <label for="tarifa">Tarifa eléctrica ($/kWh):</label>
-    <input type="number" id="tarifa" step="0.01" value="0.22">
+    <label>Horas de respaldo:</label>
+    <input type="number" id="respaldo" disabled>
 
-    <label for="costoSistema">Costo estimado del sistema ($):</label>
-    <input type="number" id="costoSistema" step="1">
-
-    <label for="vidaUtil">Vida útil del sistema (años):</label>
-    <input type="number" id="vidaUtil" value="25">
-
-    <!-- ================== RESPALDO ================== -->
-
-    <label for="respaldo">Horas de respaldo (solo híbrido / aislado):</label>
-    <input type="number" id="respaldo" min="0" disabled>
-
-    <!-- ================== BLOQUE DE BATERÍAS ================== -->
-
-    <div id="bloqueBaterias" class="bloque" style="display:none;">
+    <!-- BLOQUE DE BATERÍAS -->
+    <div id="bloqueBaterias" style="display:none; margin-top:20px;">
         <h3>Configuración de baterías</h3>
 
-        <label for="tipoBateria">Tipo de batería:</label>
-        <select id="tipoBateria">
+        <label>Tipo de batería:</label>
+        <select id="tipoBateria" onchange="actualizarBateria()">
             <option value="litio">Litio (LiFePO₄)</option>
             <option value="agm">AGM</option>
             <option value="gel">Gel</option>
-            <option value="plomo">Plomo-ácido</option>
+            <option value="plomo">Plomo ácido</option>
         </select>
 
-        <label for="voltajeBanco">Voltaje del banco de baterías (V):</label>
-        <select id="voltajeBanco">
-            <option value="12">12 V</option>
-            <option value="24" selected>24 V</option>
-            <option value="48">48 V</option>
-        </select>
+        <label>Voltaje batería individual (V):</label>
+        <input type="number" id="voltajeBateria" value="12">
 
-        <label for="dod">Profundidad de descarga – DoD (%):</label>
-        <input type="number" id="dod" value="80">
+        <label>Capacidad batería (Ah):</label>
+        <input type="number" id="capacidadBateria" value="100">
 
-        <label for="eficienciaBateria">Eficiencia de batería (%):</label>
-        <input type="number" id="eficienciaBateria" value="95">
+        <label>Profundidad de descarga (DoD %):</label>
+        <input type="number" id="dodBateria" value="90">
     </div>
 
-    <!-- ================== BOTONES ================== -->
-
     <button onclick="calcularSistema()">Calcular sistema</button>
-    <button class="secundario" onclick="nuevaCotizacion()">Nueva cotización</button>
-
-    <!-- ================== RESULTADOS ================== -->
+    <button onclick="nuevaCotizacion()">Nueva cotización</button>
 
     <div id="resultados">
         <p>Introduce los datos y presiona “Calcular sistema”.</p>
-    </div>
-
-    <!-- ================== GRÁFICA ================== -->
-
-    <div id="grafica-container" style="display:none;">
-        <canvas id="grafica" width="700" height="300"></canvas>
     </div>
 </div>
 
