@@ -10,19 +10,14 @@ function controlarRespaldo() {
     const tipo = document.getElementById("tipoSistema").value;
     const respaldo = document.getElementById("respaldo");
 
-    if (tipo === "hibrido" || tipo === "aislado") {
-        respaldo.disabled = false;
-        respaldo.value = "";
-    } else {
-        respaldo.disabled = true;
-        respaldo.value = "";
-    }
+    respaldo.disabled = !(tipo === "hibrido" || tipo === "aislado");
+    respaldo.value = "";
 }
 
 function controlarBaterias() {
     const tipo = document.getElementById("tipoSistema").value;
-    const bloque = document.getElementById("bloqueBaterias");
-    bloque.style.display = (tipo === "hibrido" || tipo === "aislado") ? "block" : "none";
+    document.getElementById("bloqueBaterias").style.display =
+        (tipo === "hibrido" || tipo === "aislado") ? "block" : "none";
 }
 
 /* =========================
@@ -39,46 +34,43 @@ function actualizarBateria() {
 }
 
 /* =========================
-   VALIDACIÓN
-========================= */
-function validarFormulario() {
-    const consumo = parseFloat(document.getElementById("consumo").value);
-    if (isNaN(consumo) || consumo <= 0) {
-        alert("Ingrese un consumo mensual válido en kWh.");
-        return false;
-    }
-    return true;
-}
-
-/* =========================
    CÁLCULO PRINCIPAL
 ========================= */
 function calcularSistema() {
 
-    if (!validarFormulario()) return;
+    const consumoMensual = parseFloat(document.getElementById("consumo").value);
+    if (!consumoMensual || consumoMensual <= 0) {
+        alert("Ingrese un consumo mensual válido.");
+        return;
+    }
 
     const tipoSistema = document.getElementById("tipoSistema").value;
-    const consumoMensual = parseFloat(document.getElementById("consumo").value);
     const ahorro = parseFloat(document.getElementById("ahorro").value);
     const horasSol = parseFloat(document.getElementById("horasSol").value);
     const perdidas = parseFloat(document.getElementById("perdidas").value);
-    const respaldoHoras = tipoSistema === "red" ? 0 : parseFloat(document.getElementById("respaldo").value);
+    const respaldoHoras = tipoSistema === "red" ? 0 : parseFloat(document.getElementById("respaldo").value || 0);
 
     /* ===== ENERGÍA ===== */
     const consumoCubierto = consumoMensual * (ahorro / 100);
-    const consumoDiario = consumoCubierto / 30;            // kWh/día
-    const consumoPorHora = consumoDiario / 24;             // kWh/h
-    const energiaRespaldo = consumoPorHora * respaldoHoras; // kWh
+    const consumoDiario = consumoCubierto / 30;
+    const consumoHora = consumoDiario / 24;
+    const energiaRespaldo = consumoHora * respaldoHoras;
 
     const energiaReal = consumoDiario / (1 - perdidas / 100);
     const potenciaFV = energiaReal / horasSol;
 
-    /* ===== PANELES ===== */
-    const potenciaPanel = 550;
-    const vmpPanel = 41;
+    /* ===== MODELOS DE PANELES ===== */
+    const modelosPanel = {
+        450: { potencia: 450, vmp: 41, imp: 10.9 },
+        550: { potencia: 550, vmp: 41, imp: 13.4 },
+        600: { potencia: 600, vmp: 42, imp: 14.3 }
+    };
 
-    const totalPaneles = Math.ceil((potenciaFV * 1000) / potenciaPanel);
-    const panelesSerie = Math.floor(350 / vmpPanel);
+    const modeloSeleccionado = document.getElementById("modeloPanel").value;
+    const panel = modelosPanel[modeloSeleccionado];
+
+    const totalPaneles = Math.ceil((potenciaFV * 1000) / panel.potencia);
+    const panelesSerie = Math.floor(350 / panel.vmp);
     const panelesParalelo = Math.ceil(totalPaneles / panelesSerie);
 
     /* ===== INVERSOR ===== */
@@ -87,38 +79,32 @@ function calcularSistema() {
     if (tipoSistema === "aislado") factor = 1.4;
 
     const potenciaInversor = potenciaFV * factor;
-    const opciones = [3, 5, 8, 10, 15];
-    const inversor = opciones.find(v => v >= potenciaInversor) || 20;
+    const inversor = [3, 5, 8, 10, 15].find(v => v >= potenciaInversor) || 20;
 
     /* ===== BATERÍAS ===== */
     let tarjetaBateria = "";
 
     if (tipoSistema !== "red") {
-
         const voltajeBat = parseFloat(document.getElementById("voltajeBateria").value);
         const capacidadBat = parseFloat(document.getElementById("capacidadBateria").value);
         const dod = parseFloat(document.getElementById("dodBateria").value) / 100;
 
-        const energiaBatWh = voltajeBat * capacidadBat;        // Wh
-        const energiaUtilWh = energiaBatWh * dod;              // Wh útiles
-        const energiaRespaldoWh = energiaRespaldo * 1000;      // kWh → Wh
+        const energiaBatWh = voltajeBat * capacidadBat;
+        const energiaUtilWh = energiaBatWh * dod;
+        const energiaRespaldoWh = energiaRespaldo * 1000;
 
-        let voltajeBanco = inversor > 5 ? 48 : 24;
-
-        const bateriasSerie = voltajeBanco / voltajeBat;
-        const bateriasTotales = Math.ceil(energiaRespaldoWh / energiaUtilWh);
-        const bateriasParalelo = Math.ceil(bateriasTotales / bateriasSerie);
-        const totalBaterias = bateriasSerie * bateriasParalelo;
+        const voltajeBanco = inversor > 5 ? 48 : 24;
+        const serie = voltajeBanco / voltajeBat;
+        const totalBat = Math.ceil(energiaRespaldoWh / energiaUtilWh);
+        const paralelo = Math.ceil(totalBat / serie);
 
         tarjetaBateria = `
         <div class="card">
             <h3>🔋 Banco de baterías</h3>
-            <p>Batería individual: ${voltajeBat} V / ${capacidadBat} Ah</p>
-            <p>Profundidad de descarga: ${dod * 100} %</p>
-            <p>Voltaje del banco recomendado: ${voltajeBanco} V</p>
-            <p>Configuración: ${bateriasSerie} en serie × ${bateriasParalelo} en paralelo</p>
-            <p>Total de baterías: ${totalBaterias}</p>
-            <p>Energía útil total: ${(totalBaterias * energiaUtilWh / 1000).toFixed(2)} kWh</p>
+            <p>Batería: ${voltajeBat} V / ${capacidadBat} Ah</p>
+            <p>Banco recomendado: ${voltajeBanco} V</p>
+            <p>${serie} en serie × ${paralelo} en paralelo</p>
+            <p>Total: ${serie * paralelo} baterías</p>
         </div>`;
     }
 
@@ -127,8 +113,12 @@ function calcularSistema() {
     <div class="cards">
         <div class="card">
             <h3>🔆 Paneles solares</h3>
-            <p>Total: ${totalPaneles}</p>
+            <p>Modelo: ${panel.potencia} W</p>
+            <p>Voltaje (Vmp): ${panel.vmp} V</p>
+            <p>Corriente (Imp): ${panel.imp} A</p>
+            <p>Total: ${totalPaneles} paneles</p>
             <p>${panelesSerie} en serie × ${panelesParalelo} en paralelo</p>
+            <p>Potencia instalada: ${(totalPaneles * panel.potencia / 1000).toFixed(2)} kWp</p>
         </div>
 
         <div class="card">
