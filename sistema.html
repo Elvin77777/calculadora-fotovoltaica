@@ -2,67 +2,95 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Calculadora Fotovoltaica</title>
+    <title>Calculadora de Sistema Fotovoltaico</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="contenedor">
-
     <h1>Calculadora de Sistema Fotovoltaico</h1>
-    <h3>Datos del sistema</h3>
+    <h3>Ingrese los datos del sistema que desea calcular</h3>
 
-    <label>Tipo de sistema:</label>
-    <select id="tipoSistema">
+    <!-- ================== DATOS GENERALES ================== -->
+
+    <label for="tipoSistema">Tipo de sistema:</label>
+    <select id="tipoSistema" onchange="controlarRespaldo(); controlarBaterias();">
         <option value="red">En red</option>
         <option value="hibrido">Híbrido</option>
         <option value="aislado">Aislado</option>
     </select>
 
-    <label>Consumo mensual (kWh):</label>
-    <input type="number" id="consumo">
+    <label for="consumo">Consumo mensual (kWh):</label>
+    <input type="number" id="consumo" min="0">
 
-    <label>Ahorro deseado (%):</label>
+    <label for="ahorro">Ahorro deseado (%):</label>
     <input type="number" id="ahorro" value="90">
 
-    <label>Horas solares pico (h/día):</label>
+    <label for="horasSol">Horas solares pico (h/día):</label>
     <input type="number" id="horasSol" step="0.1" value="5.5">
 
-    <label>Pérdidas del sistema (%):</label>
+    <label for="perdidas">Pérdidas del sistema (%):</label>
     <input type="number" id="perdidas" value="20">
 
-    <label>Horas de respaldo (solo híbrido / aislado):</label>
-    <input type="number" id="respaldo" disabled>
-
-    <hr>
-
-    <h3>Datos económicos</h3>
-
-    <label>Tarifa eléctrica ($/kWh):</label>
+    <label for="tarifa">Tarifa eléctrica ($/kWh):</label>
     <input type="number" id="tarifa" step="0.01" value="0.22">
 
-    <label>Costo estimado del sistema ($):</label>
-    <input type="number" id="costoSistema">
+    <label for="costoSistema">Costo estimado del sistema ($):</label>
+    <input type="number" id="costoSistema" step="1">
 
-    <label>Vida útil del sistema (años):</label>
+    <label for="vidaUtil">Vida útil del sistema (años):</label>
     <input type="number" id="vidaUtil" value="25">
+
+    <!-- ================== RESPALDO ================== -->
+
+    <label for="respaldo">Horas de respaldo (solo híbrido / aislado):</label>
+    <input type="number" id="respaldo" min="0" disabled>
+
+    <!-- ================== BLOQUE DE BATERÍAS ================== -->
+
+    <div id="bloqueBaterias" class="bloque" style="display:none;">
+        <h3>Configuración de baterías</h3>
+
+        <label for="tipoBateria">Tipo de batería:</label>
+        <select id="tipoBateria">
+            <option value="litio">Litio (LiFePO₄)</option>
+            <option value="agm">AGM</option>
+            <option value="gel">Gel</option>
+            <option value="plomo">Plomo-ácido</option>
+        </select>
+
+        <label for="voltajeBanco">Voltaje del banco de baterías (V):</label>
+        <select id="voltajeBanco">
+            <option value="12">12 V</option>
+            <option value="24" selected>24 V</option>
+            <option value="48">48 V</option>
+        </select>
+
+        <label for="dod">Profundidad de descarga – DoD (%):</label>
+        <input type="number" id="dod" value="80">
+
+        <label for="eficienciaBateria">Eficiencia de batería (%):</label>
+        <input type="number" id="eficienciaBateria" value="95">
+    </div>
+
+    <!-- ================== BOTONES ================== -->
 
     <button onclick="calcularSistema()">Calcular sistema</button>
     <button class="secundario" onclick="nuevaCotizacion()">Nueva cotización</button>
+
+    <!-- ================== RESULTADOS ================== -->
 
     <div id="resultados">
         <p>Introduce los datos y presiona “Calcular sistema”.</p>
     </div>
 
-    <!-- GRÁFICA -->
-    <div id="grafica-container" style="display:none;">
-        <h3>Resumen visual del consumo</h3>
-        <canvas id="grafica" width="600" height="300"></canvas>
-    </div>
+    <!-- ================== GRÁFICA ================== -->
 
+    <div id="grafica-container" style="display:none;">
+        <canvas id="grafica" width="700" height="300"></canvas>
+    </div>
 </div>
 
 <script src="script.js"></script>
 </body>
 </html>
-
