@@ -36,7 +36,7 @@ function controlarBaterias() {
 }
 
 /* =========================
-   VALIDACIÓN
+   VALIDACIÓN BÁSICA
 ========================= */
 function validarFormulario() {
     const consumo = parseFloat(document.getElementById("consumo").value);
@@ -76,10 +76,11 @@ function calcularSistema() {
     const energiaReal = consumoDiario / (1 - perdidas / 100);
     const potenciaFV = energiaReal / horasSol; // kWp
 
-    const potenciaPanel = 550;
-    const paneles = Math.ceil((potenciaFV * 1000) / potenciaPanel);
+    const potenciaPanel = 550;          // W
+    const VmpPanel = 41;                // V (típico)
+    const panelesTotales = Math.ceil((potenciaFV * 1000) / potenciaPanel);
 
-    /* ===== FACTOR SEGÚN SISTEMA ===== */
+    /* ===== FACTOR INVERSOR ===== */
     let factorInversor = 1.0;
     let tipoInversor = "";
 
@@ -96,13 +97,25 @@ function calcularSistema() {
         tipoInversor = "Off-grid";
     }
 
-    /* ===== INVERSOR ===== */
     const potenciaInversor = potenciaFV / factorInversor;
-    const potenciaInversorRedondeada = Math.ceil(potenciaInversor * 2) / 2;
+    const potenciaInvFinal = Math.ceil(potenciaInversor * 2) / 2;
 
-    /* ===== RESULTADOS BASE ===== */
+    /* =================================================
+       CONFIGURACIÓN DE PANELES (SERIE / PARALELO)
+    ================================================= */
+
+    // Objetivo: string ≈ 350 V
+    const tensionObjetivo = 350;
+    const panelesSerie = Math.max(1, Math.floor(tensionObjetivo / VmpPanel));
+    const panelesParalelo = Math.ceil(panelesTotales / panelesSerie);
+    const tensionString = panelesSerie * VmpPanel;
+
+    /* =========================
+       RESULTADOS BASE
+========================= */
     let html = `
         <h3>Resultados del sistema</h3>
+
         <div class="resultados-grid">
             <div class="card">
                 <h4>Potencia FV requerida</h4>
@@ -110,7 +123,7 @@ function calcularSistema() {
             </div>
             <div class="card">
                 <h4>Paneles solares</h4>
-                <p>${paneles} × ${potenciaPanel} W</p>
+                <p>${panelesTotales} × ${potenciaPanel} W</p>
             </div>
             <div class="card">
                 <h4>Tipo de inversor</h4>
@@ -118,14 +131,30 @@ function calcularSistema() {
             </div>
             <div class="card">
                 <h4>Potencia del inversor</h4>
-                <p>${potenciaInversorRedondeada.toFixed(1)} kW</p>
+                <p>${potenciaInvFinal.toFixed(1)} kW</p>
+            </div>
+        </div>
+
+        <h3>Configuración de paneles</h3>
+        <div class="resultados-grid">
+            <div class="card">
+                <h4>Paneles en serie</h4>
+                <p>${panelesSerie}</p>
+            </div>
+            <div class="card">
+                <h4>Cadenas en paralelo</h4>
+                <p>${panelesParalelo}</p>
+            </div>
+            <div class="card">
+                <h4>Tensión del string</h4>
+                <p>${tensionString.toFixed(0)} V</p>
             </div>
         </div>
     `;
 
     /* =========================
-       NIVEL 2 – BATERÍAS
-    ========================= */
+       BATERÍAS (NIVEL 2)
+========================= */
     if (tipo === "hibrido" || tipo === "aislado") {
 
         const horasRespaldo = parseFloat(document.getElementById("respaldo").value);
@@ -157,10 +186,6 @@ function calcularSistema() {
         html += `
             <h3>Banco de baterías</h3>
             <div class="resultados-grid">
-                <div class="card">
-                    <h4>Energía a respaldar</h4>
-                    <p>${energiaRespaldo.toFixed(2)} kWh</p>
-                </div>
                 <div class="card">
                     <h4>Banco</h4>
                     <p>${voltajeBanco} V / ${capacidadTotalBanco.toFixed(2)} kWh</p>
@@ -200,4 +225,3 @@ function nuevaCotizacion() {
     document.getElementById("resultados").innerHTML =
         "<p>Introduce los datos y presiona “Calcular sistema”.</p>";
 }
-
