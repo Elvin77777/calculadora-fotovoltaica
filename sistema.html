@@ -10,6 +10,7 @@
 <div class="contenedor">
     <h1>Calculadora Fotovoltaica</h1>
 
+    <!-- SISTEMA -->
     <label>Tipo de sistema</label>
     <select id="tipoSistema" onchange="controlarRespaldo()">
         <option value="red">En red</option>
@@ -32,6 +33,39 @@
     <label>Horas de respaldo</label>
     <input type="number" id="respaldo" disabled>
 
+    <!-- PANELES -->
+    <h2>Paneles solares</h2>
+
+    <label>Modelo de panel</label>
+    <select id="panelModelo">
+        <option value="450">Panel 450 W</option>
+        <option value="550" selected>Panel 550 W</option>
+        <option value="600">Panel 600 W</option>
+    </select>
+
+    <!-- BATERÍAS -->
+    <h2>Baterías</h2>
+
+    <label>Tipo de batería</label>
+    <select id="tipoBateria">
+        <option value="litio" selected>Litio</option>
+        <option value="agm">AGM</option>
+        <option value="gel">Gel</option>
+        <option value="plomo">Plomo ácido</option>
+    </select>
+
+    <label>Voltaje de batería (V)</label>
+    <select id="voltajeBateria">
+        <option value="12" selected>12 V</option>
+        <option value="24">24 V</option>
+    </select>
+
+    <label>Capacidad batería (Ah)</label>
+    <input type="number" id="capacidadBateria" value="200">
+
+    <label>Profundidad de descarga DoD (%)</label>
+    <input type="number" id="dod" value="80">
+
     <button onclick="calcularSistema()">Calcular sistema</button>
     <button onclick="nuevaCotizacion()">Nueva cotización</button>
 
@@ -39,6 +73,7 @@
         <div class="tarjeta" id="tarjetaEnergia"></div>
         <div class="tarjeta" id="tarjetaPaneles"></div>
         <div class="tarjeta" id="tarjetaInversor"></div>
+        <div class="tarjeta" id="tarjetaBaterias"></div>
     </div>
 </div>
 
