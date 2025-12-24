@@ -95,6 +95,7 @@ function calcularSistema() {
     document.getElementById("tarjetaEnergia").innerHTML = `
         <h3>Energía del sistema</h3>
         <p>Consumo mensual: ${consumo.toFixed(1)} kWh</p>
+        <p>Consumo diario promedio: ${consumoDiario.toFixed(2)} kWh/día</p>
         <p>Ahorro objetivo: ${ahorro}%</p>
         <p>Energía cubierta: ${consumoCubierto.toFixed(1)} kWh/mes</p>
         <p>Energía anual cubierta: ${consumoAnual.toFixed(0)} kWh/año</p>
