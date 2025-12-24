@@ -25,26 +25,41 @@ function calcularSistema() {
     const respaldoHoras = parseFloat(document.getElementById("respaldo").value || 0);
 
     if (!consumo || consumo <= 0) {
-        alert("Consumo inválido");
+        alert("Ingrese un consumo mensual válido.");
         return;
     }
 
     if (tipo !== "red" && respaldoHoras <= 0) {
-        alert("Indique horas de respaldo");
+        alert("Indique las horas de respaldo.");
         return;
     }
 
     /* ===== ENERGÍA ===== */
+
     const consumoCubierto = consumo * (ahorro / 100);
     const consumoDiario = consumoCubierto / 30;
-    const energiaReal = consumoDiario / (1 - perdidas / 100);
+    const consumoAnual = consumoCubierto * 12;
+
+    const energiaIdeal = consumoDiario;
+    const energiaReal = energiaIdeal / (1 - perdidas / 100);
+
     const potenciaFV = energiaReal / horasSol;
+    const produccionMensualEstimada = energiaReal * 30;
+
+    const margenEnergetico = ((produccionMensualEstimada - consumoCubierto) / consumoCubierto) * 100;
+
+    let energiaRespaldo = 0;
+    if (tipo !== "red") {
+        energiaRespaldo = (consumoDiario * respaldoHoras) / 24;
+    }
 
     /* ===== PANELES ===== */
+
     const potenciaPanel = parseInt(document.getElementById("panelModelo").value);
     const totalPaneles = Math.ceil((potenciaFV * 1000) / potenciaPanel);
 
     /* ===== INVERSOR ===== */
+
     let factor = 1;
     if (tipo === "hibrido") factor = 1.25;
     if (tipo === "aislado") factor = 1.3;
@@ -56,48 +71,61 @@ function calcularSistema() {
     if (inversorKW > 6) mppt = 3;
     if (inversorKW > 10) mppt = 4;
 
-    let voltajeBanco = inversorKW >= 5 ? 48 : 24;
+    const voltajeBanco = inversorKW >= 5 ? 48 : 24;
 
     /* ===== BATERÍAS ===== */
+
     const voltBat = parseInt(document.getElementById("voltajeBateria").value);
     const ahBat = parseInt(document.getElementById("capacidadBateria").value);
     const dod = parseFloat(document.getElementById("dod").value) / 100;
 
-    const energiaRespaldo = (consumoDiario * respaldoHoras) / 24;
-    const energiaUtilBat = (voltBat * ahBat) / 1000 * dod;
+    let bateriasTotales = 0;
+    let bateriasSerie = 0;
+    let bateriasParalelo = 0;
 
-    const bateriasTotales = Math.ceil(energiaRespaldo / energiaUtilBat);
-    const bateriasSerie = voltajeBanco / voltBat;
-    const bateriasParalelo = Math.ceil(bateriasTotales / bateriasSerie);
+    if (tipo !== "red") {
+        const energiaUtilBat = (voltBat * ahBat) / 1000 * dod;
+        bateriasTotales = Math.ceil(energiaRespaldo / energiaUtilBat);
+        bateriasSerie = voltajeBanco / voltBat;
+        bateriasParalelo = Math.ceil(bateriasTotales / bateriasSerie);
+    }
 
     /* ===== TARJETAS ===== */
 
     document.getElementById("tarjetaEnergia").innerHTML = `
-        <h3>Energía</h3>
-        <p>Consumo diario: ${consumoDiario.toFixed(2)} kWh</p>
-        <p>Potencia FV: ${potenciaFV.toFixed(2)} kWp</p>
+        <h3>Energía del sistema</h3>
+        <p>Consumo mensual: ${consumo.toFixed(1)} kWh</p>
+        <p>Ahorro objetivo: ${ahorro}%</p>
+        <p>Energía cubierta: ${consumoCubierto.toFixed(1)} kWh/mes</p>
+        <p>Energía anual cubierta: ${consumoAnual.toFixed(0)} kWh/año</p>
+        <p>Producción solar estimada: ${produccionMensualEstimada.toFixed(1)} kWh/mes</p>
+        <p>Pérdidas consideradas: ${perdidas}%</p>
+        <p>Margen energético: ${margenEnergetico.toFixed(1)}%</p>
+        ${tipo !== "red" ? `<p>Energía para respaldo: ${energiaRespaldo.toFixed(2)} kWh</p>` : ""}
     `;
 
     document.getElementById("tarjetaPaneles").innerHTML = `
-        <h3>Paneles</h3>
-        <p>Potencia panel: ${potenciaPanel} W</p>
-        <p>Total paneles: ${totalPaneles}</p>
+        <h3>Paneles solares</h3>
+        <p>Potencia del panel: ${potenciaPanel} W</p>
+        <p>Total de paneles: ${totalPaneles}</p>
     `;
 
     document.getElementById("tarjetaInversor").innerHTML = `
-        <h3>Inversor</h3>
+        <h3>Inversor recomendado</h3>
         <p>Potencia: ${inversorKW} kW</p>
         <p>MPPT: ${mppt}</p>
-        <p>Banco recomendado: ${voltajeBanco} V</p>
+        <p>Banco compatible: ${voltajeBanco} V</p>
     `;
 
     document.getElementById("tarjetaBaterias").innerHTML = `
         <h3>Baterías</h3>
-        <p>Total baterías: ${bateriasTotales}</p>
-        <p>Serie: ${bateriasSerie}</p>
-        <p>Paralelo: ${bateriasParalelo}</p>
-        <p>Capacidad: ${voltBat} V / ${ahBat} Ah</p>
-        <p>DoD aplicado: ${(dod * 100).toFixed(0)}%</p>
+        ${tipo === "red" ? "<p>No aplica</p>" : `
+            <p>Total baterías: ${bateriasTotales}</p>
+            <p>Serie: ${bateriasSerie}</p>
+            <p>Paralelo: ${bateriasParalelo}</p>
+            <p>Capacidad: ${voltBat} V / ${ahBat} Ah</p>
+            <p>DoD aplicado: ${(dod * 100).toFixed(0)}%</p>
+        `}
     `;
 }
 
@@ -105,7 +133,5 @@ function nuevaCotizacion() {
     document.querySelectorAll("input").forEach(i => i.value = "");
     document.getElementById("tipoSistema").value = "red";
     controlarRespaldo();
-
     document.querySelectorAll(".tarjeta").forEach(t => t.innerHTML = "");
 }
-
