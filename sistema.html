@@ -24,10 +24,10 @@
     <label>Ahorro deseado (%)</label>
     <input type="number" id="ahorro" value="90">
 
-    <label>Horas solares pico</label>
+    <label>Horas solares pico (h/día)</label>
     <input type="number" id="horasSol" value="5.5">
 
-    <label>Pérdidas (%)</label>
+    <label>Pérdidas del sistema (%)</label>
     <input type="number" id="perdidas" value="15">
 
     <label>Horas de respaldo</label>
@@ -35,12 +35,11 @@
 
     <!-- PANELES -->
     <h2>Paneles solares</h2>
-
     <label>Modelo de panel</label>
     <select id="panelModelo">
-        <option value="450">Panel 450 W</option>
-        <option value="550" selected>Panel 550 W</option>
-        <option value="600">Panel 600 W</option>
+        <option value="450">450 W</option>
+        <option value="550" selected>550 W</option>
+        <option value="600">600 W</option>
     </select>
 
     <!-- BATERÍAS -->
@@ -54,7 +53,7 @@
         <option value="plomo">Plomo ácido</option>
     </select>
 
-    <label>Voltaje de batería (V)</label>
+    <label>Voltaje batería (V)</label>
     <select id="voltajeBateria">
         <option value="12" selected>12 V</option>
         <option value="24">24 V</option>
