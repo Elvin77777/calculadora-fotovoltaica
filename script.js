@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
     controlarRespaldo();
 });
 
+
 function controlarRespaldo() {
     const tipo = document.getElementById("tipoSistema").value;
     const respaldo = document.getElementById("respaldo");
@@ -157,3 +158,4 @@ function nuevaCotizacion() {
     controlarRespaldo();
     document.querySelectorAll(".tarjeta").forEach(t => t.innerHTML = "");
 }
+
