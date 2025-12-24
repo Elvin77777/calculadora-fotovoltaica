@@ -34,31 +34,43 @@ function calcularSistema() {
         return;
     }
 
-    /* ===== ENERGÍA ===== */
+    /* ================= ENERGÍA ================= */
 
     const consumoCubierto = consumo * (ahorro / 100);
     const consumoDiario = consumoCubierto / 30;
     const consumoAnual = consumoCubierto * 12;
 
-    const energiaIdeal = consumoDiario;
-    const energiaReal = energiaIdeal / (1 - perdidas / 100);
-
+    const energiaReal = consumoDiario / (1 - perdidas / 100);
     const potenciaFV = energiaReal / horasSol;
-    const produccionMensualEstimada = energiaReal * 30;
 
-    const margenEnergetico = ((produccionMensualEstimada - consumoCubierto) / consumoCubierto) * 100;
+    const produccionMensual = energiaReal * 30;
+    const margenEnergetico = ((produccionMensual - consumoCubierto) / consumoCubierto) * 100;
 
     let energiaRespaldo = 0;
     if (tipo !== "red") {
         energiaRespaldo = (consumoDiario * respaldoHoras) / 24;
     }
 
-    /* ===== PANELES ===== */
+    /* ================= PANELES ================= */
 
     const potenciaPanel = parseInt(document.getElementById("panelModelo").value);
     const totalPaneles = Math.ceil((potenciaFV * 1000) / potenciaPanel);
+    const potenciaInstalada = (totalPaneles * potenciaPanel) / 1000;
 
-    /* ===== INVERSOR ===== */
+    const produccionPorPanel = produccionMensual / totalPaneles;
+
+    // Configuración eléctrica (estimada)
+    const voltajePanel = 41; // Vmp típico genérico
+    let panelesSerie = 1;
+
+    if (potenciaInstalada <= 3) panelesSerie = 4;
+    else if (potenciaInstalada <= 6) panelesSerie = 6;
+    else panelesSerie = 8;
+
+    const panelesParalelo = Math.ceil(totalPaneles / panelesSerie);
+    const voltajeString = panelesSerie * voltajePanel;
+
+    /* ================= INVERSOR ================= */
 
     let factor = 1;
     if (tipo === "hibrido") factor = 1.25;
@@ -73,59 +85,68 @@ function calcularSistema() {
 
     const voltajeBanco = inversorKW >= 5 ? 48 : 24;
 
-    /* ===== BATERÍAS ===== */
-
-    const voltBat = parseInt(document.getElementById("voltajeBateria").value);
-    const ahBat = parseInt(document.getElementById("capacidadBateria").value);
-    const dod = parseFloat(document.getElementById("dod").value) / 100;
+    /* ================= BATERÍAS ================= */
 
     let bateriasTotales = 0;
     let bateriasSerie = 0;
     let bateriasParalelo = 0;
 
     if (tipo !== "red") {
+        const voltBat = 12;
+        const ahBat = 200;
+        const dod = 0.8;
+
         const energiaUtilBat = (voltBat * ahBat) / 1000 * dod;
         bateriasTotales = Math.ceil(energiaRespaldo / energiaUtilBat);
         bateriasSerie = voltajeBanco / voltBat;
         bateriasParalelo = Math.ceil(bateriasTotales / bateriasSerie);
     }
 
-    /* ===== TARJETAS ===== */
+    /* ================= TARJETAS ================= */
 
     document.getElementById("tarjetaEnergia").innerHTML = `
         <h3>Energía del sistema</h3>
         <p>Consumo mensual: ${consumo.toFixed(1)} kWh</p>
-        <p>Consumo diario promedio: ${consumoDiario.toFixed(2)} kWh/día</p>
-        <p>Ahorro objetivo: ${ahorro}%</p>
+        <p>Consumo diario: ${consumoDiario.toFixed(2)} kWh/día</p>
         <p>Energía cubierta: ${consumoCubierto.toFixed(1)} kWh/mes</p>
         <p>Energía anual cubierta: ${consumoAnual.toFixed(0)} kWh/año</p>
-        <p>Producción solar estimada: ${produccionMensualEstimada.toFixed(1)} kWh/mes</p>
+        <p>Producción estimada: ${produccionMensual.toFixed(1)} kWh/mes</p>
         <p>Pérdidas consideradas: ${perdidas}%</p>
         <p>Margen energético: ${margenEnergetico.toFixed(1)}%</p>
-        ${tipo !== "red" ? `<p>Energía para respaldo: ${energiaRespaldo.toFixed(2)} kWh</p>` : ""}
+        ${tipo !== "red" ? `<p>Energía de respaldo: ${energiaRespaldo.toFixed(2)} kWh</p>` : ""}
     `;
 
     document.getElementById("tarjetaPaneles").innerHTML = `
         <h3>Paneles solares</h3>
         <p>Potencia del panel: ${potenciaPanel} W</p>
-        <p>Total de paneles: ${totalPaneles}</p>
+        <p>Cantidad de paneles: ${totalPaneles}</p>
+        <p>Potencia total instalada: ${potenciaInstalada.toFixed(2)} kWp</p>
+        <p>Producción estimada por panel: ${produccionPorPanel.toFixed(1)} kWh/mes</p>
+        <p>Configuración eléctrica:</p>
+        <ul>
+            <li>Paneles en serie: ${panelesSerie}</li>
+            <li>Paneles en paralelo: ${panelesParalelo}</li>
+            <li>Voltaje estimado del string: ${voltajeString.toFixed(0)} V</li>
+        </ul>
+        <p>Sistema modular y ampliable</p>
     `;
 
     document.getElementById("tarjetaInversor").innerHTML = `
         <h3>Inversor recomendado</h3>
         <p>Potencia: ${inversorKW} kW</p>
-        <p>MPPT: ${mppt}</p>
+        <p>MPPT recomendados: ${mppt}</p>
         <p>Banco compatible: ${voltajeBanco} V</p>
     `;
 
     document.getElementById("tarjetaBaterias").innerHTML = `
         <h3>Baterías</h3>
-        ${tipo === "red" ? "<p>No aplica</p>" : `
-            <p>Total baterías: ${bateriasTotales}</p>
+        ${tipo === "red"
+            ? "<p>No aplica para sistema en red</p>"
+            : `
+            <p>Total de baterías: ${bateriasTotales}</p>
             <p>Serie: ${bateriasSerie}</p>
             <p>Paralelo: ${bateriasParalelo}</p>
-            <p>Capacidad: ${voltBat} V / ${ahBat} Ah</p>
-            <p>DoD aplicado: ${(dod * 100).toFixed(0)}%</p>
+            <p>Banco: ${voltajeBanco} V</p>
         `}
     `;
 }
